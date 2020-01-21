@@ -72,7 +72,7 @@ Because this format is attempting to replicate such a specific visual style, the
 You can do this a few ways, but the easiest is that for any passage of your story, add the tag **"nobr"**. You can then use as many newlines as required to make the passage legible, without impacting the formatting of the final story.
 
 Here's an example passage bringing it all together, and note the "nobr" tag at the top:
-![alt text]("TwineScreenshot.PNG")
+![alt text](TwineScreenshot.PNG)
 
 (If you know a better way to handle this, feel free to Tweet at me or submit a pull request, I've only used Twine once before so my solutions work but are I'm sure not ideal!)
 
