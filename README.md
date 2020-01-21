@@ -1,4 +1,4 @@
-# DiscoElysiumTwineMacros
+# Disco Elysium Twine Macros Source
 A copy of a fangame I created for Disco Elysium in Twine using Sugarcube 2.30.0 and a set of custom macros. The intent is that you can use this story as a jumping point for your own project, with the same macros.
 
 A short set of instructions follow on how to use the macros. The game itself can be played on itch at: https://apepers.itch.io/re-hearsed-a-disco-elysium-fanwork
@@ -21,7 +21,9 @@ You will also need the custom story javascript and story CSS.
 Once your project is set up, most of the functionality around continue buttons, displaying previously chosen options, and formatting passive skill checks is handled for you - as long as you use the provided macros. There is a small set that provides the full functionality of this game.
 
 ## SetSpeaker and AddParagraph
-These two macros make up the bulk of the writing. SetSpeaker is used to set up who or what the dialogue will belong to, such as "Kim Kitsuragi" or "Sunken Motor Carriage". This will overwrite whoever the currently set speaker is - you should always make sure to use at the start of a new passage to ensure it's set up correctly no matter where you're coming from.
+These two macros make up the bulk of the writing. ```SetSpeaker``` is used to set up who or what the dialogue will belong to, such as ```"Kim Kitsuragi"``` or ```"Sunken Motor Carriage"```. 
+
+This will overwrite whoever the currently set speaker is - you should always make sure to use at the start of a new passage to ensure it's set up correctly no matter where you're coming from.
 
 So an example beginning of a passage would be:
 ```
@@ -31,10 +33,10 @@ So an example beginning of a passage would be:
 
 Note that as the text inside of macros is specified with double-quotes, you will need to escape any double-quotes you wish to appear in the text itself when a character is speaking, ```\"Like so \"```
 
-Also note that if you want to break up multiple paragraphs with the same speaker, it is unnecessary to set the speaker each time - it will stay whatever it was last set to.
+Also note that if you want to break up multiple paragraphs with the same speaker, it's unnecessary to set the speaker each time - it will stay whatever it was last set to.
 
 ## PassiveSkill
-The other macro used for dialogue is the PassiveSkill macro, which represents skill checks appearing inside of dialogue. It is basically a special kind of SetSpeaker macro that sets your speaker to be a particular skill. You follow it up with your usual AddParagraph macro containing the actual text of the skill check. You can reference any of the defined Disco Elysium skills and it will use an appropriate colour for the text. You can add your own skills too - see later in this guide.
+The other macro used for dialogue is the ```PassiveSkill``` macro, which represents skill checks appearing inside of dialogue. It's basically a special kind of SetSpeaker macro that sets your speaker to be a particular skill. You follow it up with your usual ```AddParagraph``` macro containing the actual text of the skill check. You can reference any of the defined Disco Elysium skills and it will use an appropriate colour for the text. You can add your own skills too - see later in this guide!
 
 There are two ways to include a passive skill:
 ```
@@ -42,15 +44,15 @@ There are two ways to include a passive skill:
 <<AddParagraph "Like this, as a free aside.">>
 
 <<PassiveSkill "Logic" "Easy" "Success">>
-<<AddParagraph "Or like this, as a check with a difficult and success or failure.">>
+<<AddParagraph "Or like this, as a check with a difficulty, and success or failure.">>
 <<PassiveSkill "Volition" "Legendary" "Failure">>
-<<AddParagraph "Currently you as the write specify success or failure - real dice rolls may be incoming, but not at the moment.">>
+<<AddParagraph "Currently you as the writer specify success or failure - real dice rolls may be incoming, but not at the moment.">>
 ```
 
-Remember that the PassiveSkill is setting the current speaker, so if after a skill check you return to a previously speaking character, you will need to use SetSpeaker again.
+Remember that the ```PassiveSkill``` is setting the current speaker, so if after a skill check you return to a previously speaking character, you will need to use ```SetSpeaker```again.
 
 ## AddOption
-The final macro is how we give the player options. The AddOption macro takes in the text to be displayed for the option, and the name of the passage that it should link to, like so:
+The final macro is how we give the player options. The ```AddOption``` macro takes in the text to be displayed for the option, and the name of the passage that it should link to, like so:
 ```
 <<AddOption "Move to the next part of the tutorial" "NextTutorialPassage">>
 <<AddOption "\"Remember, you need to escape double-quotes if this is spoken word!\"" "FriendlyReminderPassage">>
@@ -62,10 +64,15 @@ The downside of using macros for this is that you will not automatically get a v
 <<AddOption "It's annoying, but it works!" "SorryDevPassage">>[[|SorryDevPassage]]
 ```
 
-Now you will see the link in Twine, but because the text is empty it will not mess with any clicking.
+Now you'll see the link in Twine, but because the text is empty it will not mess with any clicking.
 
 ## Whitespace
-Because this format is attempting to replicate such a specific visual style, the macros are responsible for setting up the specific layout and whitespace of the text. This means that our passage itself is just a series of macro calls, and any whitespace inside of it should be ignored. You can do this a few ways, but the easiest is that for any passage of your story, add the tag "nobr". You can then use as many newlines as required to make the passage legible, without impacting the formatting of the final story.
+Because this format is attempting to replicate such a specific visual style, the macros are responsible for setting up the specific layout and whitespace of the text. This means that our passage itself is just a series of macro calls, and any whitespace inside of it should be ignored. 
+
+You can do this a few ways, but the easiest is that for any passage of your story, add the tag **"nobr"**. You can then use as many newlines as required to make the passage legible, without impacting the formatting of the final story.
+
+Here's an example passage bringing it all together, and note the "nobr" tag at the top:
+![alt text]("TwineScreenshot.PNG")
 
 (If you know a better way to handle this, feel free to Tweet at me or submit a pull request, I've only used Twine once before so my solutions work but are I'm sure not ideal!)
 
