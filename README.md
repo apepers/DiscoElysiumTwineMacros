@@ -1,7 +1,11 @@
 # Disco Elysium Twine Macros Source
-A copy of a fangame I created for Disco Elysium in Twine using Sugarcube 2.30.0 and a set of custom macros. The intent is that you can use this story as a jumping point for your own project, with the same macros.
+This is a copy of "Re-Hearsed", a fanwork I created for Disco Elysium in Twine using Sugarcube 2.30.0 and a set of custom macros. The intent is that you can use this story as a jumping point for your own project, with the same macros.
 
 A short set of instructions follow on how to use the macros. The game itself can be played on itch at: https://apepers.itch.io/re-hearsed-a-disco-elysium-fanwork
+
+At it's core, this is simply a set of macros that provide a styling that is evocative of Disco Elysium. The macros themselves are agnostic and simply give you easy formatting and colour - you can use this styling to create any kind of Twine game you choose, not just a fangame.
+
+Thank you to ZA/UM for creating Disco Elysium, a game I enjoyed so much, and to the Disco(rd) Elysium community for their support and encouragement!
 
 # Setting up your own Disco Elysium Twine Fangame
 You will need a recent version of Twine (this was created using 2.3.5).
