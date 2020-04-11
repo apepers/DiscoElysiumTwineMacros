@@ -12,9 +12,10 @@ If you want to be able to use GitHub Pages to have an automatically built versio
 
 ### Install Your Tools (Tweego and VS Code)
 If you're comfortable with command line and path variables, you can just get the Tweego binaries here: https://www.motoslave.net/tweego/
+
 If you'd rather not mess with paths, you can find a wizard installer here: https://github.com/ChapelR/tweego-installer
 
-You can test you have it installed by opening a command prompt and typing 'tweego' - if you see a bunch of help text, you've got it.
+You can test you have it installed by opening a command prompt and typing `tweego` - if you see a bunch of help text, you've got it.
 
 You will also need a text editor. I recommend Visual Studio Code which is free, lightweight, and has nice syntax highlighting - but use whatever you're comfortable with.
 
@@ -55,3 +56,6 @@ Commit your Twee file as often as you want! Due to it being plain text, it will 
 You can also commit your HTML file to make it easier to pull and immediately play the game or open it in the visual editor - but it will not be possible to merge, whenever there you check in a change to the twee you will completely overwrite the HTML file, which is fine.
 
 *The Twee file is the single source of truth* - if you do modify the HTML itself (such as in the Twine virtual editor), ensure you convert that HTML file back into Twee before you commit, so that the Twee file is always the correct version of your story.
+
+Whenever you've made edits to the HTML file you want to merge back into the Twee file, just use the same command you did at the start:
+`tweego -d MyTwineStory.html -o MyTwineStory.twee`
