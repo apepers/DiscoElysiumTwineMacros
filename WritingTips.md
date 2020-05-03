@@ -89,10 +89,10 @@ A high MOT protagonist observes the world and wants to *appear* cool and calm (S
 
 You can read more about the skills from a set of blog posts ZA/UM published in development:
 
-https://zaumstudio.com/2017/02/13/meet-skills-intellect/
-https://zaumstudio.com/2018/03/13/meet-the-skills-psyche/
-https://zaumstudio.com/2018/04/11/meet-the-skills-physique/
-https://zaumstudio.com/2018/05/29/meet-the-skills-motorics/
+* https://zaumstudio.com/2017/02/13/meet-skills-intellect/
+* https://zaumstudio.com/2018/03/13/meet-the-skills-psyche/
+* https://zaumstudio.com/2018/04/11/meet-the-skills-physique/
+* https://zaumstudio.com/2018/05/29/meet-the-skills-motorics/
 
 ## Specific Skills Worth Noting
 
@@ -141,9 +141,9 @@ To Alexei Pepers, for the notes on Shivers, the macros themselves, and all matte
 To madman_in_a_box on Reddit, for a thorough exploration of the dice rolls and difficulties: https://www.reddit.com/r/DiscoElysium/comments/dir1a5/how_do_dice_rolls_work/ 
 
 To the following folks in both the ZA/UM run Disco(rd) Elysium and the fan-run Disco Elysium Discord server, for thoughtful deep dives into the text and voices:
-pale-eucalypt
-Darelz
-Mayor Maynot
-Luminality
-Eyeball Candy
-xx69VOMIT69xx
+* pale-eucalypt
+* Darelz
+* Mayor Maynot
+* Luminality
+* Eyeball Candy
+* xx69VOMIT69xx
