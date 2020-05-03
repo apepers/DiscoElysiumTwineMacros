@@ -1,0 +1,416 @@
+:: StoryTitle
+YourStoryTitleHere
+
+
+:: StoryData
+{
+	"ifid": "B1E46906-738D-4617-BD15-CEF422C96FD8",
+	"format": "SugarCube",
+	"format-version": "2.30.0",
+	"start": "Intro",
+	"zoom": 0.6
+}
+
+
+:: Story Stylesheet [stylesheet]
+@import url(http://fonts.googleapis.com/css?family=David+Libre:400,700,400italic,700italic);
+@import url('https://fonts.googleapis.com/css?family=PT+Sans+Narrow&display=swap');
+
+html {
+  height: 100%;
+}
+
+body, tw-story
+{
+  font-family: 'David Libre', serif;
+  margin-left: 2em;
+  color: #d2d3cd;
+  height: 100%;
+}
+
+tw-hook
+{
+  margin-left: -25px;
+}
+
+#story {
+  height: 100%;
+  overflow-y: auto;
+  margin-top: 0em;
+  margin-bottom: 0em;
+}
+
+.passage {
+  line-height: 1.25;
+  font-size: large;
+  margin-left: 1.5em;
+}
+
+a {
+  color: #b6523a;
+  text-decoration: none;
+}
+
+a:hover {
+  color: white;
+  text-decoration: none;
+}
+a:active {
+  color: white;
+}
+
+.passage ol {
+  margin-left: -1em;
+}
+
+.psyche {
+  color: #705cbb;
+}
+
+.fysique {
+  color: #c6496b;
+}
+
+.intellect {
+  color: #6cc6ce;
+}
+
+.motorics {
+  color: #e4b934;
+}
+
+.speaker {
+  text-transform: uppercase;
+  margin-left: -1.5em;
+}
+
+
+.dim {
+  transition: opacity 0.5s;
+  opacity: 0.5;
+}
+
+.macro-timed-insert {
+	transition-duration: 2s;
+}
+
+.pastchoice {
+  color: #737c87;
+}
+
+.option {
+  font-weight: bold;
+}
+
+span.continueblock {
+  display: none;
+}
+
+a.macro-linkreplace {
+  background-color: #90280f;
+  color: white;
+  padding: 15px;
+  padding-bottom: 5px;
+  padding-top: 10px;
+  font-family: 'PT Sans Narrow', sans-serif;
+  margin-left: -1.5em;
+  display: block;
+}
+
+
+.green {
+  color: #98b48b; 
+  margin-left: -1.5em;
+}
+
+.CheckOverlay {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  pointer-events: none;
+  opacity: 0;
+  animation-name: Flash;
+  animation-duration: 2s;
+}
+
+#SuccessImg {
+  background: url(SuccessOverlay.png) no-repeat center;
+}
+
+#FailureImg {
+  background: url(FailureOverlay.png) no-repeat center;
+}
+
+@keyframes Flash {
+  0%  {opacity: 0}
+  20% {opacity: 1}
+  50% {opacity: 1}
+  100% {opacity: 0}
+}
+
+.CheckText {
+  color: white;
+  font-family: 'PT Sans Narrow', sans-serif;
+  position: absolute;
+  bottom: 25%;
+  left: 50%;
+  opacity: 0;
+  padding: 0.5em;
+  padding-left: 1.5em;
+  padding-right: 1.5em;
+  animation-name: SlideAndFade;
+  animation-duration: 2.5s;
+  animation-delay: 1s;
+}
+
+#CheckSuccess {
+  background-color: #40ce68;
+  box-shadow: 0em 0em 0.2em 0.3em #40ce68;
+}
+
+#CheckFailure {
+  background-color: #90280f;
+  box-shadow: 0em 0em 0.2em 0.3em #90280f;
+}
+
+@keyframes SlideAndFade {
+  0% {opacity: 0.75; left: 45%}
+  10% {opacity: 1; left: 50%}
+  60% {opacity: 1; left: 50%}
+  100% {opacity: 0; left: 80%}
+}
+
+:: Story JavaScript [script]
+$(document).click(function(e) {
+	if($("span.continueblock").length) {
+		$("span.continueblock").first().removeClass('continueblock');
+	}
+	e.stopPropagation();
+	return false;
+});
+
+postdisplay['paragraph'] = function (taskName) {
+	//$('.paragraph').hide().fadeIn(10000);
+};
+
+$(document).on("keyup", function (e) {
+  if ((e.keyCode == 32) && ($("#ContinueBtn"))) {
+    $("#ContinueBtn").click();
+  }
+
+  if ((e.keyCode >= 49 && e.keyCode <= 57) && (document.getElementById("OptionList"))) {
+    var list = document.getElementById("OptionList");
+    var childIndex = e.keyCode - 49; // 0 for '1', 1 for '2', etc
+    if (list.children[childIndex]) {
+      list.children[childIndex].getElementsByClassName("link-internal")[0].click();
+    }
+  }
+});
+
+
+:: StoryInit {"position":"268,25","size":"100,100"}
+<<set $optionmap to new Map()>>
+<<set $motorics to ["composure", "hand/eye coordination", "interfacing", "reaction speed", "savoir faire", "perception", "perception (smell)", "perception (sight)", "perception (taste)", "perception (touch)", "perception (hearing)"]>>
+<<set $intellect to ["conceptualization", "drama", "encyclopedia", "logic", "rhetoric", "visual calculus"]>>
+<<set $fysique to ["electrochemistry", "endurance", "half light", "pain threshold", "physical instrument", "shivers"]>>
+<<set $psyche to ["authority", "empathy", "esprit de corps", "inland empire", "suggestion", "volition"]>>
+<<set $greentext to []>>
+<<set $paraAppendMode to false>>
+
+
+:: PassageHeader {"position":"407,27","size":"100,100"}
+<<set $paragraphs to []>>
+<<if $lastoption>>
+@@.speaker.pastchoice;You@@ @@.pastchoice;- $lastoption@@
+
+<</if>>
+
+
+:: PassageFooter {"position":"547,28","size":"100,100"}
+<<DisplayParagraphs>>\
+
+
+:: DisplayOptions [nobr] {"position":"546,144","size":"100,100"}
+<ol id="OptionList">
+<<for _optiontext, _optionpassage range $optionmap>>
+  <<capture _optionpassage, _optiontext>>
+    <li>
+      <<link _optiontext _optionpassage>><<set $lastoption to _optiontext>><</link>>
+    </li>
+  <</capture>>
+<</for>>
+</ol>
+<<set $optionmap to new Map()>>
+
+:: SkillSuccess [Widget widget]
+<<nobr>>
+<<widget "SkillSuccess">>
+<div id="SuccessImg" class="CheckOverlay"></div>
+<div id="CheckSuccess" class="CheckText">CHECK SUCCESS</div>
+<<SetSpeaker "">>
+<<AddParagraph "//Green flashes at the edges of your vision - a success.//">>
+<</widget>>
+<</nobr>>
+
+:: SkillFailure [Widget widget]
+<<nobr>>
+<<widget "SkillFailure">>
+<div id="FailureImg" class="CheckOverlay"></div>
+<div id="CheckFailure" class="CheckText">CHECK FAILURE</div>
+<<SetSpeaker "">>
+<<AddParagraph "//Red flashes at the edges of your vision - a failure.//">>
+<</widget>>
+<</nobr>>
+
+:: PassiveSkill [Widget widget] {"position":"403,146","size":"100,100"}
+<<nobr>>
+<<widget "PassiveSkill">>
+<<set _skillname to ($args[0].toLowerCase())>>
+<<set _skillresult to "">>
+<<if $args[1]>>
+<<set _skillresult to ("[" + $args[1] + ": " + $args[2] + "]")>>
+<</if>>
+<<if $motorics.includes(_skillname)>>
+<<set $currentspeaker to ("@@.motorics.speaker;" +
+_skillname +
+"@@")>>
+<<elseif $intellect.includes(_skillname)>>
+<<set $currentspeaker to ("@@.intellect.speaker;" +
+_skillname +
+"@@")>>
+<<elseif $fysique.includes(_skillname)>>
+<<set $currentspeaker to ("@@.fysique.speaker;" +
+_skillname +
+"@@")>>
+<<elseif $psyche.includes(_skillname)>>
+<<set $currentspeaker to ("@@.psyche.speaker;" +
+_skillname +
+"@@")>>
+<</if>>
+<<if _skillresult>>
+<<set $currentspeaker += _skillresult>>
+<</if>>
+<<set $currentspeaker += " - ">>
+<</widget>>
+<</nobr>>
+
+
+:: Speaker [widget] {"position":"272,152","size":"100,100"}
+<<nobr>>
+<<widget "speaker">>
+@@.speaker;
+$args[0] -
+@@
+<</widget>>
+<</nobr>>
+
+
+:: AddOption [widget] {"position":"273,265","size":"100,100"}
+\<<widget "AddOption">>\<<run $optionmap.set($args[0], $args[1])>>\<</widget>>\
+
+
+:: DisplayParagraphs [widget] {"position":"401,262","size":"100,100"}
+<<widget "DisplayParagraphs">><<set _paragraph to $paragraphs[0]>>\
+<<run $paragraphs.deleteAt(0)>>\
+<span class="paragraph"><<print _paragraph>></span>
+<<if $paragraphs.length > 0>>
+<<linkreplace "@@#ContinueBtn;CONTINUE ➤@@" t8n>><<DisplayParagraphs>><</linkreplace>>\
+<<else>>\
+<<include DisplayOptions>>
+<</if>>
+<<timed 0.5s>><<script>>
+var paragraphs = document.getElementsByClassName('paragraph');
+if (paragraphs.length > 1) {
+	paragraphs[paragraphs.length-2].classList.add("dim");
+}
+<</script>><</timed>>\
+<</widget>>
+
+
+:: SetSpeaker [widget] {"position":"674,151","size":"100,100"}
+<<widget "SetSpeaker">><<set $currentspeaker to ("@@.speaker;" + $args[0] + "@@ - ")>><</widget>>
+
+:: BlankSpeaker [widget] {"position":"1225,100","size":"100,100"}
+<<widget "BlankSpeaker">><<set $currentspeaker to "">><</widget>>
+
+
+:: AddParagraph [widget] {"position":"546,268","size":"100,100"}
+<<nobr>>
+<<widget "AddParagraph">>
+<<set _para to "">>
+<<if $paraAppendMode is true>>
+<<for _text range $greentext>>
+<<set _para to (_para + _text + "<br /><br />")>>
+<</for>>
+<<set $greentext to []>>
+<<set $paraAppendMode to false>>
+<</if>>
+<<set _para to (_para + $currentspeaker + $args[0])>>
+<<run $paragraphs.push(_para)>>
+<</widget>>
+<</nobr>>
+
+:: StoryAuthor {"position":"268,439","size":"100,100"}
+Original story by [Your Name Goes Here]
+Twine framework by Pikalex88
+
+
+:: StorySubtitle {"position":"392,432","size":"100,100"}
+A Disco Elysium Fanwork
+
+
+:: StoryShare {"position":"526,432","size":"100,100"}
+[["@ampepers on Twitter"|https://twitter.com/ampepers]]
+[["Repo with the source code"|https://github.com/apepers/DiscoElysiumTwineMacros/]]
+
+:: GreenTextWidgets [widget] {"position":"400,600","size":"100,100"}
+<<nobr>>
+<<widget "TaskComplete">>
+<<run $greentext.push("@@.green;Task complete: " + $args[0] + "@@")>>
+<<if $args[1]>>
+<<run $greentext.push("@@.green;Gained experience: +" + $args[1] + "@@")>>
+<</if>>
+<<set $paraAppendMode to true>>
+<</widget>>
+
+<<widget "SecretTaskComplete">>
+<<run $greentext.push("@@.green;Secret task complete: " + $args[0] + "@@")>>
+<<if $args[1]>>
+<<run $greentext.push("@@.green;+" + $args[1] + " XP: gained experience@@")>>
+<</if>>
+<<set $paraAppendMode to true>>
+<</widget>>
+
+<<widget "NewTask">>
+<<run $greentext.push("@@.green;New task: " + $args[0] + "@@")>>
+<<set $paraAppendMode to true>>
+<</widget>>
+
+<<widget "ItemGained">>
+<<run $greentext.push("@@.green;Item gained: " + $args[0] + "@@")>>
+<<set $paraAppendMode to true>>
+<</widget>>
+
+<<widget "ItemLost">>
+<<run $greentext.push("@@.green;Item lost: " + $args[0] + "@@")>>
+<<set $paraAppendMode to true>>
+<</widget>>
+
+<<widget "ThoughtGained">>
+<<run $greentext.push("@@.green;Thought gained: " + $args[0] + "@@")>>
+<<set $paraAppendMode to true>>
+<</widget>>
+
+<<widget "LevelUp">>
+<<run $greentext.push("@@.green;Level up!@@")>>
+<<set $paraAppendMode to true>>
+<</widget>>
+
+<</nobr>>
+
+:: Intro [nobr] {"position":"1100,50","size":"100,100"}
+<<SetSpeaker "Pikalex88">>
+<<AddParagraph "Here's where your story starts, have fun!">>

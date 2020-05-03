@@ -1,0 +1,1483 @@
+:: StoryTitle
+Re-Hearsed
+
+
+:: StoryData
+{
+	"ifid": "8C920486-FDD4-42FE-AC69-E9146970307B",
+	"format": "SugarCube",
+	"format-version": "2.30.0",
+	"start": "Intro",
+	"zoom": 1
+}
+
+
+:: Story Stylesheet [stylesheet]
+@import url(http://fonts.googleapis.com/css?family=David+Libre:400,700,400italic,700italic);
+@import url('https://fonts.googleapis.com/css?family=PT+Sans+Narrow&display=swap');
+
+html {
+  height: 100%;
+}
+
+body, tw-story
+{
+  font-family: 'David Libre', serif;
+  margin-left: 2em;
+  color: #d2d3cd;
+  height: 100%;
+}
+
+tw-hook
+{
+  margin-left: -25px;
+}
+
+#story {
+  height: 100%;
+  overflow-y: auto;
+  margin-top: 0em;
+  margin-bottom: 0em;
+}
+
+.passage {
+  line-height: 1.25;
+  font-size: large;
+  margin-left: 1.5em;
+}
+
+a {
+  color: #b6523a;
+  text-decoration: none;
+}
+
+a:hover {
+  color: white;
+  text-decoration: none;
+}
+a:active {
+  color: white;
+}
+
+.passage ol {
+  margin-left: -1em;
+}
+
+.psyche {
+  color: #705cbb;
+}
+
+.fysique {
+  color: #c6496b;
+}
+
+.intellect {
+  color: #6cc6ce;
+}
+
+.motorics {
+  color: #e4b934;
+}
+
+.speaker {
+  text-transform: uppercase;
+  margin-left: -1.5em;
+}
+
+
+.dim {
+  transition: opacity 0.5s;
+  opacity: 0.5;
+}
+
+.macro-timed-insert {
+	transition-duration: 2s;
+}
+
+.pastchoice {
+  color: #737c87;
+}
+
+.option {
+  font-weight: bold;
+}
+
+span.continueblock {
+  display: none;
+}
+
+a.macro-linkreplace {
+  background-color: #90280f;
+  color: white;
+  padding: 15px;
+  padding-bottom: 5px;
+  padding-top: 10px;
+  font-family: 'PT Sans Narrow', sans-serif;
+  margin-left: -1.5em;
+  display: block;
+}
+
+.green {
+  color: #98b48b; 
+  margin-left: -1.5em;
+}
+
+.CheckOverlay {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  pointer-events: none;
+  opacity: 0;
+  animation-name: Flash;
+  animation-duration: 2s;
+}
+
+#SuccessImg {
+  background: url(SuccessOverlay.png) no-repeat center;
+}
+
+#FailureImg {
+  background: url(FailureOverlay.png) no-repeat center;
+}
+
+@keyframes Flash {
+  0%  {opacity: 0}
+  20% {opacity: 1}
+  50% {opacity: 1}
+  100% {opacity: 0}
+}
+
+.CheckText {
+  color: white;
+  font-family: 'PT Sans Narrow', sans-serif;
+  position: absolute;
+  bottom: 25%;
+  left: 50%;
+  opacity: 0;
+  padding: 0.5em;
+  padding-left: 1.5em;
+  padding-right: 1.5em;
+  animation-name: SlideAndFade;
+  animation-duration: 2.5s;
+  animation-delay: 1s;
+}
+
+#CheckSuccess {
+  background-color: #40ce68;
+  box-shadow: 0em 0em 0.2em 0.3em #40ce68;
+}
+
+#CheckFailure {
+  background-color: #90280f;
+  box-shadow: 0em 0em 0.2em 0.3em #90280f;
+}
+
+@keyframes SlideAndFade {
+  0% {opacity: 0.75; left: 45%}
+  10% {opacity: 1; left: 50%}
+  60% {opacity: 1; left: 50%}
+  100% {opacity: 0; left: 80%}
+}
+
+
+:: Story JavaScript [script]
+$(document).click(function(e) {
+	if($("span.continueblock").length) {
+		$("span.continueblock").first().removeClass('continueblock');
+	}
+	e.stopPropagation();
+	return false;
+});
+
+postdisplay['paragraph'] = function (taskName) {
+	//$('.paragraph').hide().fadeIn(10000);
+};
+
+$(document).on("keyup", function (e) {
+  if ((e.keyCode == 32) && ($("#ContinueBtn"))) {
+    $("#ContinueBtn").click();
+  }
+
+  if ((e.keyCode >= 49 && e.keyCode <= 57) && (document.getElementById("OptionList"))) {
+    var list = document.getElementById("OptionList");
+    var childIndex = e.keyCode - 49; // 0 for '1', 1 for '2', etc
+    if (list.children[childIndex]) {
+      list.children[childIndex].getElementsByClassName("link-internal")[0].click();
+    }
+  }
+});
+
+
+:: StoryInit {"position":"268,25","size":"100,100"}
+<<set $didshrug to false>>
+<<set $optionmap to new Map()>>
+<<set $motorics to ["composure", "hand/eye coordination", "interfacing", "reaction speed", "savoir faire", "perception", "perception (smell)", "perception (sight)", "perception (taste)", "perception (touch)", "perception (hearing)"]>>
+<<set $intellect to ["conceptualization", "drama", "encyclopedia", "logic", "rhetoric", "visual calculus"]>>
+<<set $fysique to ["electrochemistry", "endurance", "half light", "pain threshold", "physical instrument", "shivers"]>>
+<<set $psyche to ["authority", "empathy", "esprit de corps", "inland empire", "suggestion", "volition"]>>
+<<set $greentext to []>>
+<<set $paraAppendMode to false>>
+
+
+:: PassageHeader {"position":"407,27","size":"100,100"}
+<<set $paragraphs to []>>
+<<if $lastoption>>
+@@.speaker.pastchoice;You@@ @@.pastchoice;- $lastoption@@
+
+<</if>>
+
+
+:: PassageFooter {"position":"547,28","size":"100,100"}
+<<DisplayParagraphs>>\
+
+
+:: DisplayOptions [nobr] {"position":"546,144","size":"100,100"}
+<ol id="OptionList">
+<<for _optiontext, _optionpassage range $optionmap>>
+  <<capture _optionpassage, _optiontext>>
+    <li>
+      <<link _optiontext _optionpassage>><<set $lastoption to _optiontext>><</link>>
+    </li>
+  <</capture>>
+<</for>>
+</ol>
+<<set $optionmap to new Map()>>
+
+:: SkillSuccess [Widget widget]
+<<nobr>>
+<<widget "SkillSuccess">>
+<div id="SuccessImg" class="CheckOverlay"></div>
+<div id="CheckSuccess" class="CheckText">CHECK SUCCESS</div>
+<<SetSpeaker "">>
+<<AddParagraph "//Green flashes at the edges of your vision - a success.//">>
+<</widget>>
+<</nobr>>
+
+:: SkillFailure [Widget widget]
+<<nobr>>
+<<widget "SkillFailure">>
+<div id="FailureImg" class="CheckOverlay"></div>
+<div id="CheckFailure" class="CheckText">CHECK FAILURE</div>
+<<SetSpeaker "">>
+<<AddParagraph "//Red flashes at the edges of your vision - a failure.//">>
+<</widget>>
+<</nobr>>
+
+
+:: PassiveSkill [Widget widget] {"position":"403,146","size":"100,100"}
+<<nobr>>
+<<widget "PassiveSkill">>
+<<set _skillname to ($args[0].toLowerCase())>>
+<<set _skillresult to "">>
+<<if $args[1]>>
+<<set _skillresult to ("[" + $args[1] + ": " + $args[2] + "]")>>
+<</if>>
+<<if $motorics.includes(_skillname)>>
+<<set $currentspeaker to ("@@.motorics.speaker;" +
+_skillname +
+"@@")>>
+<<elseif $intellect.includes(_skillname)>>
+<<set $currentspeaker to ("@@.intellect.speaker;" +
+_skillname +
+"@@")>>
+<<elseif $fysique.includes(_skillname)>>
+<<set $currentspeaker to ("@@.fysique.speaker;" +
+_skillname +
+"@@")>>
+<<elseif $psyche.includes(_skillname)>>
+<<set $currentspeaker to ("@@.psyche.speaker;" +
+_skillname +
+"@@")>>
+<</if>>
+<<if _skillresult>>
+<<set $currentspeaker += _skillresult>>
+<</if>>
+<<set $currentspeaker += " - ">>
+<</widget>>
+<</nobr>>
+
+
+:: Speaker [widget] {"position":"272,152","size":"100,100"}
+<<nobr>>
+<<widget "speaker">>
+@@.speaker;
+$args[0] -
+@@
+<</widget>>
+<</nobr>>
+
+
+:: AddOption [widget] {"position":"273,265","size":"100,100"}
+\<<widget "AddOption">>\<<run $optionmap.set($args[0], $args[1])>>\<</widget>>\
+
+
+:: DisplayParagraphs [widget] {"position":"401,262","size":"100,100"}
+<<widget "DisplayParagraphs">><<set _paragraph to $paragraphs[0]>>\
+<<run $paragraphs.deleteAt(0)>>\
+<span class="paragraph"><<print _paragraph>></span>
+<<if $paragraphs.length > 0>>
+<<linkreplace "@@#ContinueBtn;CONTINUE ➤@@" t8n>><<DisplayParagraphs>><</linkreplace>>\
+<<else>>\
+<<include DisplayOptions>>
+<</if>>
+<<timed 0.5s>><<script>>
+var paragraphs = document.getElementsByClassName('paragraph');
+if (paragraphs.length > 1) {
+	paragraphs[paragraphs.length-2].classList.add("dim");
+}
+<</script>><</timed>>\
+<</widget>>
+
+
+:: SetSpeaker [widget] {"position":"674,151","size":"100,100"}
+<<widget "SetSpeaker">><<set $currentspeaker to ("@@.speaker;" + $args[0] + "@@ - ")>><</widget>>
+
+
+:: BlankSpeaker [widget] {"position":"1225,100","size":"100,100"}
+<<widget "BlankSpeaker">><<set $currentspeaker to "">><</widget>>
+
+
+:: AddParagraph [widget] {"position":"546,268","size":"100,100"}
+<<nobr>>
+<<widget "AddParagraph">>
+<<set _para to "">>
+<<if $paraAppendMode is true>>
+<<for _text range $greentext>>
+<<set _para to (_para + _text + "<br /><br />")>>
+<</for>>
+<<set $greentext to []>>
+<<set $paraAppendMode to false>>
+<</if>>
+<<set _para to (_para + $currentspeaker + $args[0])>>
+<<run $paragraphs.push(_para)>>
+<</widget>>
+<</nobr>>
+
+
+:: GreenTextWidgets [widget] {"position":"400,600","size":"100,100"}
+<<nobr>>
+<<widget "TaskComplete">>
+<<run $greentext.push("@@.green;Task complete: " + $args[0] + "@@")>>
+<<if $args[1]>>
+<<run $greentext.push("@@.green;Gained experience: +" + $args[1] + "@@")>>
+<</if>>
+<<set $paraAppendMode to true>>
+<</widget>>
+
+<<widget "SecretTaskComplete">>
+<<run $greentext.push("@@.green;Secret task complete: " + $args[0] + "@@")>>
+<<if $args[1]>>
+<<run $greentext.push("@@.green;+" + $args[1] + " XP: gained experience@@")>>
+<</if>>
+<<set $paraAppendMode to true>>
+<</widget>>
+
+<<widget "NewTask">>
+<<run $greentext.push("@@.green;New task: " + $args[0] + "@@")>>
+<<set $paraAppendMode to true>>
+<</widget>>
+
+<<widget "ItemGained">>
+<<run $greentext.push("@@.green;Item gained: " + $args[0] + "@@")>>
+<<set $paraAppendMode to true>>
+<</widget>>
+
+<<widget "ItemLost">>
+<<run $greentext.push("@@.green;Item lost: " + $args[0] + "@@")>>
+<<set $paraAppendMode to true>>
+<</widget>>
+
+<<widget "ThoughtGained">>
+<<run $greentext.push("@@.green;Thought gained: " + $args[0] + "@@")>>
+<<set $paraAppendMode to true>>
+<</widget>>
+
+<<widget "LevelUp">>
+<<run $greentext.push("@@.green;Level up!@@")>>
+<<set $paraAppendMode to true>>
+<</widget>>
+
+<</nobr>>
+
+
+:: Intro [nobr] {"position":"1136,19","size":"100,100"}
+<<SetSpeaker "Sunken Motor Carriage">>
+<<AddParagraph "The ice crunches and squeels under your feet as you and Kim approach the wreck of your Coupris Mark 40, a break in the case load having given you the chance to pay your overdue respects.">>
+
+<<AddParagraph "The motor carriage has changed remarkably little since last time you saw it, and while it's objectively depressing to see its rusting hull, there's a nostalgia in being here again and being able to mark the progress in your life past this point.">>
+
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "Kim also seems caught up in thought, looking out over the sea and absentmindedly adjusting his bomber jacket as you are both caressed by the cool wind coming in off the coast.">>
+
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "He comes to his senses first, noticing you staring and giving one of his small smiles. \"Well, let's get to it then,\" he remarks, pulling a small plastic bottle out of his jacket.">>
+
+<<PassiveSkill "Electrochemistry">>
+<<AddParagraph "Ooooooh what do we have here???!! Looks DRINKABLE Harry-boy!">>
+
+<<AddOption "What's that?" "StartFuneral">>[[|StartFuneral]]
+
+
+:: StartFuneral [nobr] {"position":"959,8","size":"100,100"}
+<<PassiveSkill "Encyclopedia" "Easy" "Success">>
+<<AddParagraph "Libation, pouring out a last drink for the departed. What type of liquor varies from region to region but the sentiment is always the same. The lieutenant appears to have gone with something cheap.">>
+
+<<PassiveSkill "esprit De Corps" "Moderate" "Success">>
+<<AddParagraph "A tradition of its own really, driven by the realities of an officer's paycheque. Slightly better than the swill you drink to get through a working day, because you've got to do something special -- but only slightly.">>
+
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "The lieutenant takes a respectable sip of spirits and then carefully pours a portion onto the ice in front of him, an amber trail creeping towards the sunken carriage.">>
+
+<<AddParagraph "After a moment of reflection, he passes you the bottle with clear reluctance.">>
+
+<<NewTask "Libation for your MC">>
+
+<<PassiveSkill "esprit de Corps" "Medium" "Success">>
+<<AddParagraph "He's almost certain giving you this bottle is a very bad idea. Only respect for ancient cop tradition is forcing his hand. Don't make him regret this.">>
+<<AddOption "Take the bottle" "Take the bottle">>
+[[|Take the bottle]]
+
+
+:: Take the bottle [nobr] {"position":"957,159","size":"100,100"}
+<<SetSpeaker "The Bottle">>
+<<AddParagraph "It fits in your hand like that's where it belongs, the hearty slosh as you take it telling some automatic process in your brain that it's still a pretty full bottle even if it's on the small side -- enough to at least get a buzz going.">>
+
+<<PassiveSkill "Electrochemistry" "Easy" "Success">> 
+<<AddParagraph "That'd be me baby -- and I can tell you with absolute certainty, this stuff is going to be delicious and sooooo smooth. You are just PARCHED. You should drink ALL of it! You and Kim, out on the ice, he's already had a drink, it's time to kick this party into high gear!">>
+
+<<AddOption "This is about *respect*. We are respecting my dead motor carriage. Not partying." "Car Respect">>[[|Car Respect]]
+<<AddOption "I *do* want to party with Kim..." "PartyWithKim">>[[|PartyWithKim]]
+
+
+:: Car Respect [nobr] {"position":"949,377","size":"100,100"}
+<<PassiveSkill "Electrochemistry" "Easy" "Success">>
+<<AddParagraph "Oh we are *totally* respecting the fuck out of this MC, absolutely. If you think about it, wouldn't it be disrespectful to *not* drink it all? Didn't you *care* about your motor carriage? You *killed* this motor carriage, doesn't that mean *anything* to you?">>
+
+<<PassiveSkill "Empathy" "Challenging" "Success">>
+<<AddParagraph "Water flooding into internal chambers, combustion failing to catch, pistons pushing with whatever energy they have left to spare but slowing and dying, becoming inert...">>
+
+<<PassiveSkill "esprit de corps">>
+<<AddParagraph "In an unpopular hole in the wall tavern filled shot glasses are placed in a line along the edge of the bar, like little marching soldiers. By silent signal, each glass is lifted by hands at varying levels of steadiness -- each but one.">>
+<<AddOption "\"To a fallen comrade.\" [Take a tiny sip]" "TinySip">>[[|TinySip]]
+<<AddOption "Oh god. I killed it. It was my motor carriage and I killed it." "Car Guilt">>[[|Car Guilt]]
+<<AddOption "\"I really don't think drinking is going to end well for me.\" [Give the bottle back to Kim]" "GiveKimBottle">>[[|GiveKimBottle]]
+
+
+:: PartyWithKim [nobr] {"position":"1153,293","size":"100,100"}
+<<PassiveSkill "Electrochemistry">>
+<<AddParagraph "That's my boy -- bottoms up baby!">>
+
+<<AddOption "Take a tiny sip" "TinySip">>[[|TinySip]]
+<<AddOption "Take a reasonably sized sip" "Take a reasonably sized sip">>[[|Take a reasonably sized sip]]
+<<AddOption "Actually no, I'm not sure this is a good idea *or* respectful" "Car Respect">>[[|Car Respect]]
+
+
+:: Car Guilt [nobr] {"position":"961,583","size":"100,100"}
+<<SetSpeaker "SUNKEN MOTOR CARRIAGE"
+<<AddParagraph "You stare fixedly at the miserable rusting wreck of the motor carriage with increasingly blurry eyes. It's getting colder the more you stare at it. It's dead, and it was yours.">>
+
+<<SetSpeaker "KIM KITSURAGI">> 
+<<AddParagraph "\"Khm.\" A pointed cough breaks the spell and you realize that Kim is staring at you. He looks to have transitioned from worry about the specific action of giving you liquor to worry about your emotional state in general.">>
+
+<<AddParagraph "He looks pointedly at the bottle you're gripping way too tight.">>
+
+<<PassiveSkill "ELECTROCHEMISTRY" "Challenging" "Success">>
+<<AddParagraph "That is the look of someone about to forcibly take your booze away \"\"for your own good\"\" you need to DRINK IT RIGHT NOW">>
+
+<<AddOption "DRINK DRINK DRINK" "DRINK DRINK DRINK">>[[|DRINK DRINK DRINK]]
+<<AddOption "\"Kim, do you think cars can feel pain?\"" "CarPain">>[[|CarPain]]
+
+
+:: DRINK DRINK DRINK [nobr] {"position":"1456,718","size":"100,100"}
+<<SetSpeaker "MEMORIAL LIQUOR">>
+<<AddParagraph "Your mouth burns with the wash of harsh low quality liquor as you urgently raise the bottle to your lips before Kim has time to decide to take it away. It's not exactly a motion made for sipping -- this is more of a 'chug'.">>
+
+<<include "OhYouChuggin">>[[|OhYouChuggin]]
+
+
+:: CarPain [nobr] {"position":"835,710","size":"100,100"}
+<<SetSpeaker "KIM KITSURAGI">> 
+<<AddParagraph "\"No,\" the lieutenant answers decisively.">>
+
+<<PassiveSkill "Empathy" "Trivial" "Success">>
+<<AddParagraph "You've become familiar with many flavours of \"no\" from Kim, such as \"no, that doesn't make sense, but I will let you keep talking until it does,\" or \"no, that is not a thing a human being should think let alone say.\"">>
+
+<<AddParagraph "This one is a middle ground - it means \"no, and let me cut you off from thinking this thought any further because it's not going to be good for your brain.\"">>
+
+<<PassiveSkill "hand/eye COORDINATION" "Challenging" "Failure">>
+<<AddParagraph "While you are lost in thought, Kim has reached over and firmly pulled the bottle out of your hand.">>
+
+<<AddOption "\"Hey! I was going to drink that!\"" "ComplainAboutLosingBooze">>[[|ComplainAboutLosingBooze]]
+<<AddOption "\"Aww man...\"" "SadAboutLosingBooze">>[[|SadAboutLosingBooze]]
+<<AddOption "\"Yeah that is probably a good call.\"" "AcceptLosingBooze">>[[|AcceptLosingBooze]]
+
+
+:: CarEulogy [nobr] {"position":"1321,2529","size":"100,100"}
+<<SetSpeaker "SUNKEN MOTOR CARRIAGE">>
+<<AddParagraph "You open your heart to the rusting carriage, taking in every detail to try and gleam some deeper understanding. Blue paint flaking off and into the sea. A canvas bit that... kept the rain out probably? Exposed cylinders and pipes and other winding metallic shapes that are where explosions happened you think?">>
+
+<<PassiveSkill "Encyclopedia" "Challenging" "Failure">>
+<<AddParagraph "You're *pretty* sure that's where the explosions happen, that was the one fact about motor carriages that seemed exciting. You're also pretty certain those are the bits you weren't supposed to submerge in water.">>
+
+<<SetSpeaker "SUNKEN MOTOR CARRIAGE">>
+<<AddParagraph "The motor carriage is indifferent to your attempts at a connection. Behind it the sea is in constant motion, lapping against the ice, but the motor carriage is inert. Silent. What do you *know* about this car?">>
+
+<<AddOption "\"This motor carriage... was expensive.\"" "ExpensiveCar">>[[|ExpensiveCar]]
+<<AddOption "\"I was supposed to take care of it, and I drove it into the sea.\"" "KimIHaveCarGuilt">>[[|KimIHaveCarGuilt]]
+<<AddOption "\"It died a warrior's death. It lived a humble motor carriage, but it died a legend.\"" "CarLegend">>[[|CarLegend]]
+
+
+:: ExpensiveCar [nobr] {"position":"1196,2856","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\The lieutenant nods solemnly. You know it took him many, many years of scrimping and saving to buy his own Coupris from the 57th.">>
+
+<<PassiveSkill "esprit de Corps" "Godly" "Success">>
+<<AddParagraph "Lieutenant Kim \“Kimball\” Kitsuragi’s face is a mask of perfect professionalism as he slides over his final payment to the requisitions officer. It’s only when he’s alone, running his hands over the sleek frame, lists of long planned modifications running through his mind, that he allows himself to smile.">>
+
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\“Still, it worked out in the end. The precinct may be… unhappy with the loss of funds to the department, but with my Kineema they didn’t end up being down a vehicle.\”">>
+<<AddParagraph "His phrasing is delicate - unhappy barely begins to cover it. You won’t be living this one down anytime soon.">>
+
+<<PassiveSkill "esprit de Corps" "Easy" "Success">>
+<<AddParagraph "Just a few weeks ago, in a garage jammed into the side of an old silk mill, Jean Vicquemare lists the many terrible fates that he will personally inflict upon you if you so much as touch the wheel of another Coupris. Lieutenant Kitsuragi sits in the driver's seat, idly flipping through his notebook, seemingly nonplussed by the rising voices outside the motor carriage.">>
+
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\"Don't look quite so glum detective. They'll forgive you eventually. In the end, people are more valuable than equipment, and what you do moving forward is more important than the mistakes in your past.\"">>
+
+<<AddOption "\"I suppose so. Thanks Kim.\"" "BelieveKim">>[[|BelieveKim]]
+<<AddOption "\"I think Jean is capable of being mad *forever*. He is a man powered by rage.\"" "JeanRage">>[[|JeanRage]]
+
+
+:: KimIHaveCarGuilt [nobr] {"position":"1334,2856","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "The lieutenant is looking for comforting words but coming up short, settling with placing a consoling hand on your shoulder.">>
+
+<<PassiveSkill "Pain Threshold">>
+<<AddParagraph "There’s nothing to say because you’re right. That’s what you did, and that’s why it hurts.">>
+
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\“Perhaps it would help to think of some of the good times you shared with it?\"">>
+
+<<PassiveSkill "Empathy" "Moderate" "Success">>
+<<AddParagraph "The lieutenant doesn’t tend to go along with your tendency to treat objects like people, but the motor carriage hits him closer to home.">>
+
+<<PassiveSkill "Pain Threshold">>
+<<AddParagraph "A sweet idea but Harry, your mind is still a wasteland. You might’ve gotten some of it back but not enough for this. You can’t remember a damned thing about this motor carriage beyond the way you killed it. The least it deserves is someone to honour its memory, and it got saddled with a fucking amnesiac.">>
+<<AddOption "\"(sob) I... I can’t remember *anything*\"" "ICantRemember">>[[|ICantRemember]]
+
+
+:: CarLegend [nobr] {"position":"2519,2863","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\"I would have loved to have seen it when you jumped the canal...\" Kim’s voice is wistful.">>
+
+<<AddParagraph "\"While I obviously can't condone the kind of reckless driving that lead to this -- it *is* a more interesting end than most RCM vehicles meet. They all die one way or another. Wrecked. Scrapped.\"">>
+
+<<PassiveSkill "Empathy" "Legendary" "Success">>
+<<AddParagraph "His tone is surprisingly somber. Perhaps even a little bit choked. His eyes just the slightest bit glassy.">>
+
+<<PassiveSkill "Interfacing" "Challenging" "Success">>
+<<AddParagraph "The bond between man and machine is deep. To contemplate it being severed is to contemplate a loss of a piece of yourself.">>
+
+<<AddOption "\"Kim are you... going to cry?\"" "KimYouCrying">>[[|KimYouCrying]]
+<<AddOption "\"You're never gonna lose your Coupris, Kim, nobody takes care of their motor carriage as well as you do.\"" "KineemaForver">>[[|KineemaForver]]
+<<AddOption "\"(Say nothing. Let him regain his composure.)\"" "GiveKimSpace">>[[|GiveKimSpace]]
+
+
+:: HideEvidence [nobr] {"position":"1076,1204","size":"100,100"}
+<<PassiveSkill "HALF LIGHT">>
+<<AddParagraph "Even fresh out of the womb an animal understands -- if you are chased, run. If you can't kill it, do what you must to escape.">>
+
+<<PassiveSkill "SAVOIR FAIRE">>
+<<AddParagraph "But *you're* the one killing it right now bud, you've almost polished off that bottle in record time, without even a pause for awkward nose-breathing!">>
+
+<<SetSpeaker "MEMORIAL LIQUOR">>
+<<AddParagraph "It's true -- this was a small bottle and you are a big drinker, there's only one good gulp left in this thing and it seems like you're about it take it.">>
+
+<<AddOption "[Reaction Time - Formidable 13] Ah, fuck! (Try to *not* drink the entire bottle)" "TryToStopInTime">>[[|TryToStopInTime]]
+<<AddOption "Just own it. Finish it off like a boss." "YouChugIt">>[[|YouChugIt]]
+
+
+:: KimDisappointedFace [nobr] {"position":"1255,1281","size":"100,100"}
+<<SetSpeaker "KIM KITSURAGI">>
+<<AddParagraph "You try to subtly glance at Kim and get a read on how this whole situation is going. He is looking right at you. He looks...">>
+
+<<PassiveSkill "EMPATHY" "Trivial" "Success">>
+<<AddParagraph "Disappointed.">>
+
+<<PassiveSkill "esprit DE CORPS" "Medium" "Success">>
+<<AddParagraph "Not in you, actually -- at himself, for handing you the bottle and expecting any other outcome.">>
+
+<<AddOption "Oh god that's even worse" "OhGodHesNotMadHesDisappointed">>[[|OhGodHesNotMadHesDisappointed]]
+<<AddOption "I mean I am at best a recovering alcoholic and at worse a regular alcoholic so I think that's fair" "WelpIAmAnAlcoholic">>[[|WelpIAmAnAlcoholic]]
+
+
+:: YouChugIt [nobr] {"position":"1555,1261","size":"100,100"}
+<<SetSpeaker "MEMORIAL LIQUOR">>
+<<AddParagraph "In a blink it's gone. Not really enough for a true buzz what with the monumental tolerance you've built up, but it's enough to have your gut begging for more -- to remember how good it feels, and if this is nice then surely more of it would be ever nicer...">>
+
+<<TaskComplete "Libation for your MC" 10>>
+
+<<SetSpeaker "KIM KITSURAGI">>
+<<AddParagraph "The sound of a weary sigh draws your attention to Kim. His hand is covering his brow, glasses digging in uncomfortably. \"I don't know what I expected to happen,\" he says flatly.">>
+
+<<AddOption "Sorry Kim..." "SorryCop">>[[|SorryCop]]
+<<AddOption "\"Did you maybe bring another bottle as backup?\"" "DisasterCop">>[[|DisasterCop]]
+<<if $didshrug is false>>
+<<AddOption "[Give your best 'what can you do about it' shrug]" "BlaseCop">>[[|BlaseCop]]
+<</if>>
+
+
+:: StopDrinking [nobr] {"position":"1137,949","size":"100,100"}
+<<SkillFailure>>
+
+<<SetSpeaker "MEMORIAL LIQUOR">>
+<<AddParagraph "Deciding to stop is easier said than done, muscle memory has had your throat gulping away. It's a small bottle and you've got a big appetite -- even as you spasm your way to stopping it seems there's only good gulp left in this thing and you're half way through taking it.">>
+
+<<AddOption "[Reaction Time - Formidable 13] Ah, fuck! (Try to *not* drink the entire bottle)" "TryToStopInTime">>[[|TryToStopInTime]]
+<<AddOption "Just own it. Finish it off like a boss." "YouChugIt">>[[|YouChugIt]]
+
+
+:: TryToStopInTime [nobr] {"position":"747,1462","size":"100,100"}
+<<SkillFailure>>
+
+<<SetSpeaker "MEMORIAL LIQUOR">>
+<<AddParagraph "Too slow. The only alcohol left is what's pooled in your mouth, settling thick and raw on your tongue. This stuff is definitely meant to be a 'get it over with' beverage.">>
+
+<<AddParagraph "It's a straightforward choice at this point -- admit defeat and swallow, or try to make spitting out a lukewarm mouthful of booze seem like a totally cool thing you meant to do the whole time.">>
+
+<<PassiveSkill "SAVOIR FAIRE">>
+<<AddParagraph "There is no way it's going to look cool or intentional if you spit this out. You would be, quite literally, spitting on the memory of your coupe.">>
+
+<<PassiveSkill "VOLITION">>
+<<AddParagraph "No -- we've wrestled control of this situation back, own up to it like a man! Demonstrate that you're able to exercise *some* self-control.">>
+
+<<PassiveSkill "COMPOSURE" "Legendary" "Failed">>
+<<AddParagraph "Squaring your shoulders and puffing your cheeks you prepare to release a powerful fountain of liquor so that your intentionality cannot be doubted...">>
+
+<<AddOption "Glance at Kim" "KimUnimpressedBoozeSpit">>[[|KimUnimpressedBoozeSpit]]
+
+
+:: OhGodHesNotMadHesDisappointed [nobr] {"position":"1008,1506","size":"100,100"}
+<<SetSpeaker "KIM KITSURAGI">>
+<<AddParagraph "The lieutenant reaches over and pries the bottle away from your mouth and out of your hands. It's not difficult -- you might have been able to physically resist, but the shame coursing through you makes it impossible to try.">>
+
+<<AddParagraph "\"That is enough of that, I think,\" he says decisively, upending the dregs onto the ice in front of you.">>
+
+<<TaskComplete "Libation for your MC" 10>>
+
+<<AddOption "\"Oh right, the toasting bit.\"" "RightTheToast">>[[|RightTheToast]]
+<<AddOption "\"I was totally going to do that.\"" "\"I was totally going to do that.\"">>[[|"I was totally going to do that."]]
+<<AddOption "\"I'm sorry Kim.\"" "SorryCop">>[[|SorryCop]]
+
+
+:: WelpIAmAnAlcoholic [nobr] {"position":"1262,1406","size":"100,100"}
+<<set $didshrug to true>>
+<<PassiveSkill "savoir faire" "Heroic" "Failure">>
+<<AddParagraph "Without taking the bottle away from your mouth you try to give a little shrug to come across as some kind of loveable rascal, but there just isn't anything charming about a ragged aging man chugging cheap booze at a funeral.">>
+
+<<include "YouChugIt">>[[|YouChugIt]]
+
+
+:: "I was totally going to do that." [nobr] {"position":"1179,1610","size":"100,100"}
+<<SetSpeaker "KIM KITSURAGI">>
+<<AddParagraph "\"Khm.\" He doesn't dignify that response with an answer, waiting expectantly for you to dig yourself out of this hole.">>
+
+<<AddOption "Look at your motor carriage and try to think of a fitting toast" "CarEulogy">>[[|CarEulogy]]
+
+
+:: RightTheToast [nobr] {"position":"1054,1893","size":"100,100"}
+<<SetSpeaker "KIM KITSURAGI">>
+<<AddParagraph "\"Yes, the entire reason we are out here drinking cheap spirits in the middle of the day on the sea ice -- we are honouring the memory of your motor carriage,\" he says with much less enthusiasm than earlier.">>
+
+<<PassiveSkill "esprit DE CORPS" "Medium" "Success">>
+<<AddParagraph "He's testing out trying to justify why he gave you a drink if anyone at the precinct asks and he is *not* liking how it sounds out loud.">>
+
+<<AddOption "Look at your motor carriage and try to think of a fitting toast" "CarEulogy">>[[|CarEulogy]]
+
+
+:: Take a reasonably sized sip [nobr] {"position":"1618,729","size":"100,100"}
+<<SetSpeaker "MEMORIAL LIQUOR">>
+<<AddParagraph "Your mouth burns with the wash of harsh low quality liquor as you take a hearty sip. Possibly actually more than a sip. Gulp might be a more appropriate descriptor. Or 'chug'.">>
+
+<<PassiveSkill "Logic" "Easy" "Success">>
+<<AddParagraph "It might have been a smart idea to consider what a 'reasonable' sip looks like for an alcoholic. I do not think an outside observer would consider the way you're shotgunning this bottle 'reasonable'.">>
+
+<<include "OhYouChuggin">>[[|OhYouChuggin]]
+
+
+:: KimUnimpressedBoozeSpit [nobr] {"position":"735,1634","size":"100,100"}
+<<SetSpeaker "KIM KITSURAGI">>
+<<AddParagraph "You make the mistake of glancing to the side before committing and Kim's utterly unimpressed face shatters your poise.">>
+
+<<PassiveSkill "EMPATHY">>
+<<AddParagraph "Yeah this is going to be gross my friend, Kim isn't going to like this at all, you really should have consulted with me before committing to this.">>
+
+<<SetSpeaker "MEMORIAL LIQUOR">>
+<<AddParagraph "A sputtering burbling exhale gets as much booze down your front as it does on the ice -- a shotgun blast of dribble in an arc before you.">>
+
+<<TaskComplete "Libation for your MC" 10>>
+
+<<AddParagraph "There is really no cool way of wiping alcohol-infused saliva off your chin. You just have to live with this moment.">>
+
+<<AddOption "Clean yourself up" "KimDissesYourDrinking">>[[|KimDissesYourDrinking]]
+
+
+:: KimDissesYourDrinking [nobr] {"position":"740,1773","size":"100,100"}
+<<SetSpeaker "KIM KITSURAGI">>
+<<AddParagraph "Looking to the lieutenant balefully, you see his lips pressed in a thin line -- forcefully enough for you to recognize that he's trying very hard to keep from smirking. \"Not exactly the method of respecting your fallen comrades I'm familiar with -- would this be another example of the 'free spirited Disco tradition' of Precinct 41 that you're so eager to teach me?\"">>
+
+<<AddOption "\"Absolutely, next time we're at a funeral I'll let you do it first.\"" "YouGoFirst">>[[|YouGoFirst]]
+
+
+:: YouGoFirst [nobr] {"position":"748,1904","size":"100,100"}
+<<SetSpeaker "KIM KITSURAGI">>
+<<AddParagraph "\"How generous of you. What a wonderful exchange of culture this has been.\" He is no longer attemping to contain the smirk.">>
+
+<<AddParagraph "\"In my own precinct, we took this opportunity to say a few words about the departed. Does that carry over, or should we perhaps be composing some kind of lewd memorial limerick?\"">>
+
+<<AddOption "\"How did you know! You go first Kim.\"" "KimDoALimerick">>[[|KimDoALimerick]]
+<<AddOption "\"Uh, actually, no. We don't do limericks. Or spit.\"" "AdmitDefeat">>[[|AdmitDefeat]]
+
+
+:: KimDoALimerick [nobr] {"position":"692,2071","size":"100,100"}
+<<SetSpeaker "KIM KITSURAGI">>
+<<AddParagraph "\"Oh no, Harry,\" Kim smoothly demures, \"you were best acquainted with the deceased, it's only right you're the first to say your piece.\" With the arch of an eyebrow it's clear he isn't budging.">>
+
+<<PassiveSkill "AUTHORITY">>
+<<AddParagraph "He is *daring* you to commit to this bit. Don't back down!">>
+
+<<AddOption "\"Uh, actually, we don't do limericks. Or spit.\"" "AdmitDefeat">>[[|AdmitDefeat]]
+<<AddOption "[DRAMA - Medium 6] Come up with a limerick on the spot" "LimerickTime">>[[|LimerickTime]]
+
+
+:: AdmitDefeat [nobr] {"position":"890,2071","size":"100,100"}
+<<SetSpeaker "KIM KITSURAGI">>
+<<AddParagraph "\"You don't say,\" Kim observes not unkindly, letting you back away gracefully. \"In that case, do you have some normal non-rhyming words that you'd like to say?\"">>
+
+<<include "CarEulogy">>[[|CarEulogy]]
+
+
+:: LimerickTime [nobr] {"position":"728,2229","size":"100,100"}
+<<PassiveSkill "CONCEPTUALIZATION" "Medium" "Success">>
+<<AddParagraph "You fixate on the sight of your rusted and abandoned Coupris and blurt out what comes to mind.">>
+
+<<AddOption "\"There was once a Coupris sent from Jamrock..\"" "Limerick2">>[[|Limerick2]]
+
+
+:: Limerick2 [nobr] {"position":"756,2371","size":"100,100"}
+<<SkillSuccess>>
+
+<<SetSpeaker "You">>
+<<AddParagraph "\"With a driver who went off all half-cocked.\"">>
+<<AddParagraph "\"He drank himself numb,\"">>
+<<AddParagraph "\"Crashed his Coupe in a slum,\"">>
+<<AddParagraph "\"Now it's junk even junkies can't hock.\"">>
+
+<<PassiveSkill "Drama">>
+<<AddParagraph "Not our best, but not too shabby I daresay! You've certainly caught the eye of a certain gentleman...">>
+
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\"You really are full of surprises aren't you,\" Kim says with impressed amusement. \"You win, I really thought you were bluffing.\"">>
+
+<<AddOption "\"Fine, I take this victory, but you OWE me.\"" "KimOwesYou">>[[|KimOwesYou]]
+<<AddOption "\"That wasn't the deal Kim. Your turn.\"" "NoMercy">>[[|NoMercy]]
+
+
+:: TinySip [nobr] {"position":"1257,510","size":"100,100"}
+<<SetSpeaker "MEMORIAl LIQUOR">>
+<<AddParagraph "You're careful to only let the tiniest of sips pass through your lips.">>
+
+<<PassiveSkill "ELECTROCHEMISTRY">>
+<<AddParagraph "Oh BABY that is the STUFF! Feel that burn down your throat, a little bit of fire to warm you deep deep inside. How could you possibly make due with just a taste when even this little drop was so damn good?">>
+
+<<AddOption "I mean, it's fine so far, I might as well have a bit more..." "MoreBooze">>[[|MoreBooze]]
+<<AddOption "[Volition - Heroic 14] Nope, I'm good, stopping now." "StopDrinking">>[[|StopDrinking]]
+
+
+:: GiveKimBottle [nobr] {"position":"512,649","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "The lieutenant takes the bottle back without hesitation, sparing you the time to doubt your decision.">>
+
+<<PassiveSkill "ELECTROCHEMISTRY">>
+<<AddParagraph "I can't believe you just did that! NOT COOL MAN!">>
+
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\"A wise judgement I think. Given the circustances of the motor carriage's demise, abstinance is a more fitting sign of respect in any case,\" Kim says with a smile that holds no judgement.">>
+
+<<SecretTaskComplete "Resist the urge to drink" 50>>
+
+<<PassiveSkill "Empathy">>
+<<AddParagraph "He's proud of you -- that feels better than any shitty bottom shelf liquor.">>
+
+<<include "KimPoursBooze">>[[|KimPoursBooze]]
+
+
+:: StoicLoseBooze [nobr] {"position":"318,1132","size":"100,100"}
+<<PassiveSkill "Volition" "Challenging" "Success">>
+<<AddParagraph "You watch the liquor wearing its path into the ice with an appropriately somber expression. Or at least, an Expression.">>
+
+<<include "NormalToast">>[[|NormalToast]]
+
+
+:: WhimperLoseBooze [nobr] {"position":"532,1145","size":"100,100"}
+<<SetSpeaker "SUNKEN MOTOR CARRIAGE">> 
+<<AddParagraph "You can't hold in a pathetic whimper as you watch all that booze go to waste. Kim has the decency to pretend not to hear you.">>
+
+<<include "NormalToast">>[[|NormalToast]]
+
+
+:: NormalToast [nobr] {"position":"431,1276","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "Kim tucks the tare into his jacket for disposal later and looks to you expectantly. \"A toast?\"">>
+
+<<PassiveSkill "esprit de corps" "Medium" "Success">>
+<<AddParagraph "You know you've been through this before, have heard offerings to the dead that spanned the breadth of human emotion. Anger, mourning, humour, camaraderie... but there is one that is an older tradition. That feels right.">>
+
+<<AddOption "\"After life, death -- after death, life again.\"" "DoloresToast"]]>>[[|DoloresToast]]
+
+
+:: DoloresToast [nobr] {"position":"433,1389","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\"After the world, the pale; after the pale -- the world again.\" He completes the toast solemnly.">>
+
+<<SetSpeaker "SUNKEN MOTOR CARRIAGE">>
+<<AddParagraph "Contemplative silence falls. The only sounds stem from the continuous cycling patterns of nature. Wind rustling in the reeds. Waves against the shore.">>
+
+<<PassiveSkill "Shivers" "Challenging" "Success">>
+<<AddParagraph "Flapping canvas from an abandoned tent. A distant bass beat that is both unnatural and more natural than anything else the wind carries to you. Desolate as this place is, it is permeated with life.">>
+
+<<PassiveSkill "Inland Empire" "Legendary" "Success">>
+<<AddParagraph "For now.">>
+
+<<AddOption "\"(Enjoy the moment)\"" "SilentMoment">>[[|SilentMoment]]
+
+
+:: ComplainAboutLosingBooze [nobr] {"position":"706,858","size":"100,100"}
+<<SetSpeaker "KIM KITSURAGI">>
+<<AddParagraph "\"Yes, you were, that's the problem,\" Kim remarks wryly. \"I think it'd be best to *not* do that right now.\"">>
+
+<<include "PickingKim">>[[|PickingKim]]
+
+
+:: SadAboutLosingBooze [nobr] {"position":"867,860","size":"100,100"}
+<<PassiveSkill "AUTHORITY">>
+<<AddParagraph "You sad, sorry excuse for a man. You didn't even try.">>
+
+<<SetSpeaker "KIM KITSURAGI">>
+<<AddParagraph "\"It was insensitive of me to offer it to you, you've been doing well,\" Kim offers sympathetically. \"My apologies. Really, what's important is not the drinking anyway, it's honouring the tradition.\"">>
+
+<<include "PickingKim">>[[|PickingKim]]
+
+
+:: AcceptLosingBooze [nobr] {"position":"1009,910","size":"100,100"}
+<<SetSpeaker "KIM KITSURAGI">>
+<<AddParagraph "\"Yes, given the circustances of the Mark 40's demise, I think abstinance is a more fitting sign of respect in any case,\" Kim says with a smile that holds no judgement.">>
+
+<<PassiveSkill "EMPATHY">>
+<<AddParagraph "He's proud of you -- that feels better than any shitty bottom shelf liquor.">>
+
+<<include "PickingKim">>[[|PickingKim]]
+
+
+:: KimPoursBooze {"position":"427,1002","size":"100,100"}
+<<nobr>>
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "With a steady hand, Kim pours out another measured dram of liquor. After a moment's deliberation, he flips the bottle fully, letting it empty onto the ice.">>
+
+<<TaskComplete "Libation for your MC" 10>>
+
+<<AddOption "Nod stoically" "StoicLoseBooze">>[[|StoicLoseBooze]]
+<<AddOption "Whimper" "WhimperLoseBooze">>[[|WhimperLoseBooze]]
+<</nobr>>
+
+
+:: PickingKim [nobr] {"position":"862,983","size":"100,100"}
+<<PassiveSkill "ELECTROCHEMISTRY">>
+<<AddParagraph "You just *had* to go and remind him of what an emotional fucking mess you are. He's such a narc, why do we even like this guy?!!?">>
+
+<<SetSpeaker "KIM KITSURAGI">>
+<<AddParagraph "The wind is pulling at his hair, cold bringing a slight red tinge to his cheeks. His collar is popped to counter the chill and it looks... just unfairly cool. With the setting sun behind him and reflecting on the vapour of his breath, it's difficult to look at him directly without being blinded.">>
+
+<<PassiveSkill "ELECTROCHEMISTRY">>
+<<AddParagraph "Right. Devastatingly fucking handsome. Fair, but we can get drunk and *then* get our hands on as much of that hotness as possible. I don't see why they have to be mutually exclusive!">>
+
+<<PassiveSkill "SUGGESTION" "Challenging" "Success">>
+<<AddParagraph "They are pretty mutually exclusive.">>
+
+<<PassiveSkill "INLAND EMPIRE" "Heroic" "Success">>
+<<AddParagraph "And you know that of the realities available to you, the brightest is the one where you choose him.">>
+
+<<include "KimPoursBooze">>[[|KimPoursBooze]]
+
+
+:: OhYouChuggin [nobr] {"position":"1568,879","size":"100,100"}
+<<PassiveSkill "ELECTROCHEMISTRY">>
+<<AddParagraph "YESSS! Chugging is better anyway, don't you remember, it's one of your skills! Grade A party trick, real popular back at the ol' precinct. But it's only cool if you go all the way, otherwise you're just being fucking selfish. Kim's a square, he's never seen a pro at work, show him what you're made of! He'll be so impressed!">>
+
+<<PassiveSkill "Empathy" "Easy" "Success">>
+<<AddParagraph "Kim will certainly not be impressed.">>
+
+<<SetSpeaker "MEMORIAL LIQUOR">>
+<<AddParagraph "One way or another you have definitely not stopped drinking it yet. The indecision and illictness of it all fills you with the frantic urge to go faster -- get it over with, hide the evidence!">>
+
+<<AddOption "An urge to hide evidence does not seem like a good thing for a cop" "HideEvidence">>[[|HideEvidence]]
+<<AddOption "Look at Kim" "KimDisappointedFace">>[[|KimDisappointedFace]]
+<<AddOption "It *is* only cool if I go all the way, fuck it! (Chug the bottle)" "YouChugIt">>[[|YouChugIt]]
+<<AddOption "[Volition - Heroic 14] Nope, I'm good, stopping now." "StopDrinking">>[[|StopDrinking]]
+
+
+:: MoreBooze [nobr] {"position":"1361,894","size":"100,100"}
+<<SetSpeaker "MEMORIAL LIQUOR">> 
+<<AddParagraph "You're more careless this time, letting yourself really enjoy it, savouring the way you can feel familiar neurochemical pathways leaping into action. The frigid air makes the growing warmth in your chest all the most wonderful.">>
+
+<<PassiveSkill "Drama">>
+<<AddParagraph "I daresay, my good sir, that you may be losing the plot!">>
+
+<<PassiveSkill "ELECTROCHEMISTRY">>
+<<AddParagraph "DON'T RUIN THIS FOR ME!!!">>
+
+<<SetSpeaker "MEMORIAL LIQUOR">>
+<<AddParagraph "This wasn't a big bottle and you really let yourself go at it -- you suddenly realize you're one more gulp away from polishing the whole thing off, and you seem to be about to take it.">>
+
+<<AddOption "[Reaction Time - Formidable 13] Ah, fuck! (Try to *not* drink the entire bottle)" "TryToStopInTime">>[[|TryToStopInTime]]
+<<AddOption "Just own it. Finish it off like a boss." "YouChugIt">>[[|YouChugIt]]
+
+
+:: SorryCop [nobr] {"position":"1371,1505","size":"100,100"}
+<<SetSpeaker "KIM KITSURAGI">>
+<<AddParagraph "\"It's fine. I shouldn't have brought it in the first place. Stupid really, that an organization with as many issues with alcohol abuse as the RCM has so many traditions built around drinking.\"">>
+
+<<PassiveSkill "LOGIC" "Easy" "Success">>
+<<AddParagraph "These two things are not a coincidence.">>
+
+<<SetSpeaker "KIM KITSURAGI">>
+<<AddParagraph "The lieutenant squares his shoulders -- he is not one to dwell for long on things that can't be changed. \"Do you have some words to say detective?\"">>
+
+<<AddOption "Oh right, the toasting bit." "RightTheToast">>[[|RightTheToast]]
+
+
+:: BlaseCop [nobr] {"position":"1539,1504","size":"100,100"}
+<<SetSpeaker "KIM KITSURAGI">>
+<<AddParagraph "Kim sighs again and brings up his other hand so he is now fully burying his face. \"Fine, fine, of course you drank it all, what else should I have expected\" he mutters into his gloves.">>
+
+<<AddParagraph "The lieutenant squares his shoulders -- he is not one to dwell for long on things that can't be changed. \"Do you at least have some words to say detective?\"">>
+
+<<AddOption "\"Oh right, the toasting bit.\"" "RightTheToast">>[[|RightTheToast]]
+
+
+:: DisasterCop [nobr] {"position":"1696,1512","size":"100,100"}
+<<SetSpeaker "KIM KITSURAGI">>
+<<AddParagraph "\"No.\" He is not impressed with you and levels a look to make sure you know it.">>
+
+<<PassiveSkill "AUTHORITY" "Legendary" "Failure">>
+<<AddParagraph "You feel thoroughly chided despite your best efforts to play it off as cool.">>
+
+<<SetSpeaker "KIM KITSURAGI">>
+<<AddParagraph "The lieutenant squares his shoulders -- he is not one to dwell for long on things that can't be changed. \"Do you at least have some words to say detective?\"">>
+
+<<AddOption "\"Oh right, the toasting bit.\"" "RightTheToast">>[[|RightTheToast]]
+
+
+:: WeCanJustHangOut [nobr] {"position":"862,3007","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\"Harry, you hardly have to organize a funeral if you want to 'hang out', you can just ask, like a normal person\" Kim responds in exhasperated amusement.">>
+
+<<AddOption "\"Ah but we hang out normally all the time, this is a SPECIAL hang out\"" "SpecialHangOut">>[[|SpecialHangOut]]
+<<AddOption "\"I am not a normal person\"" "IAmNotNormal">>[[|IAmNotNormal]]
+
+
+:: SpecialHangOut [nobr] {"position":"732,3183","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\"I think I would classify most of the time I spend around you as *special*, Harry.\"">>
+
+<<PassiveSkill "Empathy" "Moderate" "Success">>
+<<AddParagraph "He was aiming for joking, but he landed at sincere.">>
+
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "With an embarrassed little cough, Kim turns quickly, walking a few steps away to settle on the nearby swing set, gesturing at the adjacent swing in an invitation.">>
+
+<<AddOption "[Join him]" "SwingSit">>[[|SwingSit]]
+
+
+:: IAmNotNormal [nobr] {"position":"882,3183","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\"Oh I am well aware of that,\" Kim says as he shakes his head, turning to walk a few paces away and settle himself on the rickity swing set.">>
+
+<<PassiveSkill "Empathy" "Trivial" "Success">>
+<<AddParagraph "He isn't even particularly trying to hide how much he says that with fondness.">>
+
+<<AddOption "[Join him]" "SwingSit">>[[|SwingSit]]
+
+
+:: SwingSit [nobr] {"position":"882,3333","size":"100,100"}
+<<PassiveSkill "Shivers">>
+<<AddParagraph "The metal of the swing leaches warmth where it touches. A cutting physical sensation that brings a hyperawareness of this moment, causing a corresponding mental distance. Taking stock of a moment you are aware is going to stick in your mind.">>
+
+<<include ShiversOptions>>[[|ShiversOptions]]
+
+
+:: ShiversOptions [nobr] {"position":"884,3460","size":"100,100"}
+<<AddOption "Beside me?" "ShiversKim">>[[|ShiversKim]]
+<<AddOption "Ahead of me?" "ShiversAhead">>[[|ShiversAhead]]
+<<AddOption "Behind me?" "ShiversBehind">>[[|ShiversBehind]]
+<<AddOption "What comes next?" "WhatIsNext">>[[|WhatIsNext]]
+
+
+:: ShiversKim [nobr] {"position":"734,3610","size":"100,100"}
+<<PassiveSkill "Shivers">>
+<<AddParagraph "Lieutenant Kim Kitsuragi, formerly of Precinct 57, now a proud member of the 41st. He has followed you far and will follow you further. Your guiding star when the darkness threatens. Keep him close. Always.">>
+
+<<include ShiversOptions>>[[|ShiversOptions]]
+
+
+:: ShiversAhead [nobr] {"position":"884,3610","size":"100,100"}
+<<PassiveSkill "Shivers">>
+<<AddParagraph "A Coupris Mark 40, its service ended before its time. A monument to careless screaming self annihilation, boldly jutting from the ice. Or perhaps nothing more than a hunk of metal, a relic of the past, of no more interest than any of the other abandoned things that wash up on this coast.">>
+
+<<include ShiversOptions>>[[|ShiversOptions]]
+
+
+:: ShiversBehind [nobr] {"position":"1034,3610","size":"100,100"}
+<<PassiveSkill "Shivers">>
+<<AddParagraph "A fishing village where things change very quickly or not at all. Another motor carriage, pristine and well cared for, which you are never going to be allowed to drive let along plunge into the sea. Further on, a winding motorway that will lead you on the long road home. But while it may be long, it's not lonesome. Not this time.">>
+
+<<include "ShiversOptions">>[[|ShiversOptions]]
+
+
+:: WhatIsNext [nobr] {"position":"949,3726","size":"100,100"}
+<<PassiveSkill "Shivers">>
+<<AddParagraph "An exercise in perspective. Two detectives side by side, passing time in comfortable conversation, the width of their touching shoulders making up the extent of their whole world in that moment. The wreck is larger than them both, but still merely a small and healing scar on the wide coast of Martinaise. As Martinaise itself is a small aching wound on the living breathing mass that is Revachol.">>
+
+<<AddParagraph "The past itself is similarly variable -- as immediate and violent as the impact of airborn metal crashing through ice, as unnoticeable and unavoidable as the slow spread of oxidization. The future is as distanct as the horizon, and as near as your next breath. What's next is this moment, stretching onwards, until the sun sets and the prospect of a night spent somewhere warmer pulls you both away.">>
+
+<<AddOption "And after that?" "TheEnd">>[[|TheEnd]]
+
+
+:: TheEnd [nobr] {"position":"949,3876","size":"100,100"}
+<<PassiveSkill "esprit de corps">>
+<<AddParagraph "Partnership">>
+
+<<PassiveSkill "Authority">>
+<<AddParagraph "Duty">>
+
+<<PassiveSkill "Electrochemistry">>
+<<AddParagraph ";)">>
+
+<<BlankSpeaker>>
+<<AddParagraph "FIN">>
+
+
+:: ICantRemember [nobr] {"position":"1334,3006","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\“Shit shit, aww I’m sorry Harry...\” He’s mortified, moving snug to your side in a one-armed embrace, rubbing your back to console you through your gulping sobs.">>
+
+<<AddParagraph "\“I… can’t remember it for you, obviously. I don’t know your history well enough. But I could talk about my own patrol vehicle perhaps?\”">>
+
+<<AddOption "\"(nod)\"" "KimCarStory">>[[|KimCarStory]]
+<<AddOption "\"No, no, I’m okay, just give me a minute…\"" "TooCoolForStory">>[[|TooCoolForStory]]
+
+
+:: KimCarStory [nobr] {"position":"1334,3156","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\“Well… I didn’t always have my Kineema. Precinct 57 had this jalopy, a Coupris Geo. They discontinued the line in under a year to go back to the Mark 20, there’s a rumour they only even existed because the director of marketing had a son who fancied himself an engineer…\”">>
+
+<<AddParagraph "\“Ah - anyway,\” Kim clears his throat with a bit of a flush, \“it was a shit MC. A bit of a joke, that they saddled new or unpopular officers with. So for a while, it was my assigned vehicle.\”">>
+
+<<PassiveSkill "esprit de Corps" "Moderate" "Success">>
+<<AddParagraph "The tradition was to either raise enough hell about it that you got a reassigned vehicle, or pass it off to the next sucker. Juvenile Police Officer Kitsuragi was not inclined towards either option.">>
+
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\“One night I was on my way to break up some reported vandalism in progress, when a 10-80 came in over the radio.\”">>
+
+<<PassiveSkill "Encyclopedia" "Easy" "Success">>
+<<AddParagraph "Officer in hot pursuit.">>
+
+<<AddOption "\"*Please* tell me you answered it.\"" "FuckingKitsuragi">>[[|FuckingKitsuragi]]
+
+
+:: FuckingKitsuragi [nobr] {"position":"1334,3306","size":"100,100"}
+<<SetSpeaker "KimKitsuragi">>
+<<AddParagraph "He grins, clearly savouring the memory. \“Of course. I was furthest from the scene, the others already on their way - when I called it in the communications officer laughed. I turned that Geo around and went full heel-and-toe.\”">>
+
+<<AddParagraph "\“I used every trick in the book, every shortcut. There’s a neighbourhood near Terminal H with alleys so narrow that the colloquial term for driving through it is ‘trading some paint.’ I went in one side and out the other without dipping below 80.\”">>
+
+<<AddOption "\"If this story doesn’t end with you getting there in time I am going to cry again.\"" "KimCarMaster">>[[|KimCarMaster]]
+
+
+:: KimCarMaster [nobr] {"position":"1334,3456","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\“I’m Kim fucking Kitsuragi. I didn’t just get there, I was the first to arrive.\” He is awash with smugness and well earned pride. It’s a good look.">>
+
+<<PassiveSkill "esprit de Corps" "Challenging" "Success">>
+<<AddParagraph "\"An over-tuned Coupris Geo screams past Patrol Officer Hanson, leaving a stench of burning rubber in its wake. \"Is that fucking Kitsuragi?\" Hanson turns to ask his partner. Before they can offer an opinion, the Geo disappears around a corner screeching, angle so sharp one wheel leaves the pavement.">>
+
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\“I was lightly reprimanded, since I was technically operating above my jurisdiction. But they never assigned me to the Geo again, and when I requisitioned the Kineema, they kept the red tape to a minimum.\”">>
+
+<<AddParagraph "The lieutenant gives himself a brief moment to savour the memory before letting it pass. \“Someone plowed the Geo right into a brick wall just a few months later, trying to take a turn without enough grip. It was a terrible vehicle, but still, I was sad to see it go.\"">>
+
+<<AddOption "\"Kim, how are you so cool?\"" "CoolKim">>[[|CoolKim]]
+<<AddOption "\"Aww, poor Geo.\"" "PoorGeo">>[[|PoorGeo]]
+<<AddOption "\"I bet I also did tons of cool stunts in this MC. Carriage chases every day.\"" "StuntBrag">>[[|StuntBrag]]
+
+
+:: CoolKim [nobr] {"position":"1334,3606","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "The lieutenant just shrugs. Like the cool bastard that he is.">>
+
+
+<<PassiveSkill "Composure" "Moderate" "Success">>
+<<AddParagraph "He would flush a bit under the praise, but he’s too cool for that too.">>
+
+<<PassiveSkill "Empathy">>
+<<AddParagraph "He’s embarrassed to talk so much about himself, but it was worth it to lift your spirits.">>
+
+<<display "Wrapup">>
+
+
+:: Wrapup [nobr] {"position":"728,2806","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\"Is there anything else you had planned for the service?\"">>
+
+<<AddOption "\"No, I think I'm good. This was good.\"" "ThisWasGood">>[[|ThisWasGood]]
+<<AddOption "\"Honestly I just wanted an excuse to hang out with you\"" "WeCanJustHangOut">>[[|WeCanJustHangOut]]
+
+
+:: PoorGeo [nobr] {"position":"1454,3606","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\"Yes, well. That is the point. Every motor carriage ends up in the scrapyard one day. There are more inglorious ways yours could have gone out than crashed into the sea.\"">>
+
+<<SetSpeaker "Sunken Motor Carriage">>
+<<AddParagraph "It does look pretty cool, crippling guilt aside. Maybe you can live with that.">>
+
+<<display "Wrapup">>
+
+
+:: StuntBrag [nobr] {"position":"1574,3606","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\"Mm, did you? I would’ve loved to see what you could do. Shame that you’re banned from operating any kind of RCM vehicle.\"">>
+
+<<PassiveSkill "Interfacing">>
+<<AddParagraph "Ouch. Hitting you where it hurts. You did kind of ask for it though.">>
+
+<<display "Wrapup">>
+
+
+:: TooCoolForStory [nobr] {"position":"1806,3164","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\"Of course,\" he says sympathetically, a bit grateful that he won’t have to delve into his own feelings.">>
+
+<<SetSpeaker "You">>
+<<AddParagraph "A few minutes of shoulder patting and nose blowing later, you’ve got a handle on it. You’re as put together as you ever are.">>
+
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\"At the end of the day, it was built to serve a purpose, which it did. Every RCM vehicle ends up in the scrapyard eventually -- spun out in a wreck, damaged in a shoot out, made obsolete by a newer model...\" The list comes to him easily, like it’s one he’s considered before, looking somewhat haunted.">>
+<<AddParagraph "He shakes himself out of it. \"Did you lose this Coupris in the line of duty? Not exactly, no. But the result is the same. What matters more is moving forward, making sure that sacrifice mattered.\"">>
+<<AddParagraph "\"And I think it’s fair to say Harry, that you are a better man today than you were when you did this. I don’t believe you will drive another motor carriage into the sea.\" The way he says it makes it sound like it could be true.">>
+
+<<AddOption "\"Thanks Kim, that means a lot\"" "MakeKimProud">>[[|MakeKimProud]]
+<<AddOption "\"How do you know that though?\"" "HowDoYouKnow">>[[|HowDoYouKnow]]
+
+
+:: MakeKimProud [nobr] {"position":"1731,3314","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\"Of course. You’ve done well you know, since we first met. I’m proud of you.\" His gaze slides away from you, emotion rawer than he can easily share.">>
+
+<<PassiveSkill "Composure" "Legendary" "Failure">>
+<<AddParagraph "Just nod. Don’t try to speak. It will absolutely turn into tears and we will be back where we started. Nod like a badass.">>
+
+<<AddOption "\"(Nod)\"" "JustNodMan">>[[|JustNodMan]]
+<<AddOption "\"Ohgodddkimicanthowcanyouuhwaah\"" "Burble">>[[|Burble]]
+
+
+:: HowDoYouKnow [nobr] {"position":"1881,3314","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\"Well, pragmatically, you have been banned from driving any of Precinct 41’st patrol vehicles and I don’t expect that to be lifted anytime soon.\"">>
+
+<<PassiveSkill "esprit de Corps">>
+<<AddParagraph "Yeah sorry buddy, that one is sticking with you for a looooong time.">>
+
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\"This means that the only RCM motor carriage you have access to is my own, due to our partnership. And Harry?\"">>
+
+<<AddParagraph "\"You will *never* drive my Kineema into the fucking ocean.\" He is deadly serious and his raised eyebrow contributes to your gut certainty in his words.">>
+
+<<PassiveSkill "Authority">>
+<<AddParagraph "It’s true. You have the ability to do many terrible wonderful things. But even if you wanted to, you would *never* be able to fuck with Kim Kitsuragi’s Kineema. In this battle, you wouldn’t stand a chance.">>
+
+<<PassiveSkill "Half Light">>
+<<AddParagraph "He means it. Wasn’t this supposed to comforting??? He would *end* you, it’s terrifying.">>
+
+<<PassiveSkill "Electrochemistry">>
+<<AddParagraph "Unless…">>
+
+<<PassiveSkill "Half Light">>
+<<AddParagraph "No. Terrifying. Stop.">>
+
+<<AddOption "\"Kim… you're scaring me…\"" "ScaryKim">>[[|ScaryKim]]
+<<AddOption "\"Urk... hot...\"" "ScaredAndHorny">>[[|ScaredAndHorny]]
+
+
+:: JustNodMan [nobr] {"position":"1656,3464","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "He nods back. Just once. Not gonna go down that road again.">>
+
+<<display "Wrapup">>
+
+
+:: Burble [nobr] {"position":"1806,3464","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\"There there.\" The back patting resumes while you burble inconsolably.">>
+
+<<PassiveSkill "Empathy" "Hard" "Success">>
+<<AddParagraph "He can’t let himself get any sappier or *he* is going to start crying, which is unacceptable. One of you needs to keep it together, and it’s clearly not you.">>
+
+<<PassiveSkill "Composure">>
+<<AddParagraph "Please, take some lessons from Lieutenant Kitsuragi. We can’t keep doing this.">>
+
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "When you’ve finally pulled yourself together once again, Kim gives you a smile, a reassurance. He doesn’t judge you for this.">>
+
+<<display "Wrapup">>
+
+
+:: ScaryKim [nobr] {"position":"1926,3464","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "Like the sun coming out from behind clouds, the Kim’s expression clears, somewhat abashed.">>
+
+<<PassiveSkill "Authority">>
+<<AddParagraph "But only somewhat. He *did* mean it.">>
+
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\"Khm. Yes, well. The point is, I doubt you’re at a place anymore where you’d *try* to drive a motor carriage into the sea. And if you did, there are many people aware of your past vehicular transgressions who will be quick to stop you.\"">>
+
+<<AddOption "\"You’re right. Thanks.\"" "SuccessfulAssurance">>[[|SuccessfulAssurance]]
+<<AddOption "\"Right, it’d be lame to do the same thing again, gotta keep people guessing. If I fuck up again it’ll be some brilliant new way!\"" "BoldNewFuckups">>[[|BoldNewFuckups]]
+
+
+:: ScaredAndHorny [nobr] {"position":"2046,3464","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "If the lieutenant is surprised he doesn’t show it. His stare just gets MORE intense somehow.">>
+
+<<PassiveSkill "Electrochemistry">>
+<<AddParagraph "Yessssss">>
+
+<<PassiveSkill "Pain Threshold">>
+<<AddParagraph "You’re sweating. Pinned like an insect.">>
+
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "Like a switch, he turns it off, expression relaxing into smugness.">>
+
+<<PassiveSkill "Savoir Faire">>
+<<AddParagraph "Trading sad for horny is a bold move at a funeral, but at least you’re not getting snot all over yourself anymore.">>
+
+<<display "Wrapup">>
+
+
+:: SuccessfulAssurance [nobr] {"position":"1851,3614","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\"Anytime.\"">>
+
+<<display "Wrapup">>
+
+
+:: BoldNewFuckups [nobr] {"position":"2001,3614","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\"If that makes you feel better to say so... but please don’t\" the lieutenant says in fond and somewhat worried exasperation.">>
+
+<<display "Wrapup">>
+
+
+:: KimYouCrying [nobr] {"position":"2342,3037","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\"No no, of course not. That would be ridiculous. I'm fine.\" He is aggressively fine, expression snapping back into perfect professionalism.">>
+
+<<AddParagraph "\"It was a machine, meant to serve a purpose, and now that purpose is done. That's all there is too it.\"">>
+
+<<PassiveSkill "Empathy" "Easy" "Success">>
+<<AddParagraph "He is *not* going to let push him on this. Kim Kitsuragi isn't going to judge you for crying about wrecked motor carriages, but *he* isn't going to be caught dead doing it.">>
+
+<<display "Wrapup">>
+
+
+:: KineemaForver [nobr] {"position":"2523,3041","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "The lieutenant ducks his head, scrubbing furiously under his glasses with the palm of his hand. \"That's -- kh, uh, that's nice of you to say Harry.\"">>
+
+<<PassiveSkill "Empathy" "Easy" "Success">>
+<<AddParagraph "Do not, under any circumstances, comment on the sniffling. He is vulnerable enough right now. He won't appreciate you drawing attention to it. Just be here.">>
+
+<<AddOption "\"(Pat him on the shoulder)\"" "ShoulderPat">>[[|ShoulderPat]]
+<<AddOption "\"(Pull him into a hug)\"" "HugTime">>[[|HugTime]]
+
+
+:: GiveKimSpace [nobr] {"position":"2753,3001","size":"100,100"}
+<<PassiveSkill "Empathy" "Moderate" "Success">>
+<<AddParagraph "He appreciates the space. It's not that he has anything against displays of emotion necessarily, but it's uncomfortable for him to do it like this, out in the open.">>
+
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "He recovers quickly, glasses settled back in place, back straighted. \"Ah. Anyway. It certainly met a memorable end, and that's something.\"">>
+
+<<display "Wrapup">>
+
+
+:: ShoulderPat [nobr] {"position":"2448,3191","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "Kim leans into it appreciatively, still fussing with his glasses.">>
+
+<<display "ComfortKim">>[[|ComfortKim]]
+
+
+:: HugTime [nobr] {"position":"2598,3191","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\"Oh, no Harry I'm fine, really,\" Kim's half-hearted complaints are smoothered are you pull him into a bear hug.">>
+
+<<AddParagraph "Despite his protests, he returns the hug readily, burying his face in your chest. A few moments pass before he extricates himself with some reluctance.">>
+
+<<display "ComfortKim">>[[|ComfortKim]]
+
+
+:: ComfortKim {"position":"2520,3344","size":"100,100"}
+<<AddParagraph "\"Ah, anyway. It's fine. All things do come to an end, whatever they are. That's alright. It's what we do until then that matters.\" He gives you a slightly watery smile.">>
+
+
+<<PassiveSkill "Logic">>
+<<AddParagraph "No amount of upkeep and care can shelter a motor carriage from the ravages of the world forever. Or anything else, for that matter. He knows this, and can't be persuaded to forget it.">>
+
+<<PassiveSkill "Empathy">>
+<<AddParagraph "But he appreciates you trying.">>
+
+<<display "Wrapup">>
+
+
+:: ThisWasGood [nobr] {"position":"440,3336","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\"I agree, this was... nice. I'm glad we got the time to do it.\"">>
+
+<<AddParagraph "The lieutenant turns and walks a few steps back, settling on the nearby swing set, leg propped up in what looks like a horribly uncomfortable posture.">>
+
+<<PassiveSkill "Savoir Faire">>
+<<AddParagraph "Uncomfortable, but *cool*.">>
+
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\"After coming all the way here we might as well enjoy the fresh air for a while. It's quite beautiful here really, when you aren't trying to solve a murder.\"">>
+
+<<AddOption "[Join him]" "SwingSit">>[[|SwingSit]]
+
+
+:: KimOwesYou [nobr] {"position":"681,2521","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\"Fine fine, it's a deal. I owe you a favour, time and place of your choosing.\" His relief at not having to rhyme wins out over his apprehension at giving you that kind of blanket power.">>
+
+<<PassiveSkill "Electrochemistry">>
+<<AddParagraph "Oh and we have some *ideas* Harry, do you want to hear them?">>
+
+<<PassiveSkill "Authority">>
+<<AddParagraph "You've gotten one up on Kim Kitsuragi, a rare occurance, do *not* immediately spoil it.">>
+
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\"Do you have something else you'd like to say about your motor carriage? A eulogy of some sort?\" Kim can see the gears churning and is eager to change the subject back to the funeral at hand.">>
+
+<<display "CarEulogy">>[[|CarEulogy]]
+
+
+:: NoMercy [nobr] {"position":"831,2521","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "The lieutenant sighs, tilting his head back and rubbing at his temple. \"Fine fine, give me a minute...\"">>
+
+<<PassiveSkill "Authority">>
+<<AddParagraph "That's right, no backing down! There is honour at stake, even in silly games of words!">>
+
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "Suddenly the lieutenant snaps his fingers, a glint in his eyes.">>
+
+<<AddParagraph "\"There once was a Jamrock detective,\"">>
+<<AddParagraph "\"With an impulse control quite defective.\"">>
+<<AddParagraph "\"He got filthy drunk, his carriage was sunk.\"">>
+<<AddParagraph "\"As a statement, it proved quite effective.\"">>
+
+<<SecretTaskComplete "The lieutenant's limerick" 25>>
+
+<<PassiveSkill "Drama">>
+<<AddParagraph "Ah, quite cutting words! Well composed! A worthy response!">>
+
+<<AddOption "\"Ouch.\"" "KimWordsHurt">>[[|KimWordsHurt]]
+<<AddOption "\"Well played.\"" "NiceOneKim">>[[|NiceOneKim]]
+
+
+:: KimWordsHurt [nobr] {"position":"756,2671","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\"Yes well, you did set the tone. I just followed your lead.\" He's too pleased with himself for coming up with something to be too put off by your pouting.">>
+
+<<AddParagraph "\"Anyway -- did you have any other words you wanted to say for the funeral? Some kind of eulogy perhaps?\"">>
+
+<<display "CarEulogy">>[[|CarEulogy]]
+
+
+:: NiceOneKim [nobr] {"position":"906,2671","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\"Thank you, though I have to say, I did like yours better.\" Gracious in victory, but pleased with himself.">>
+
+<<AddParagraph "\"Anyway -- did you have any other words you wanted to say for the funeral? Some kind of eulogy perhaps?\"">>
+
+<<display "CarEulogy">>[[|CarEulogy]]
+
+
+:: SilentMoment [nobr] {"position":"433,1539","size":"100,100"}
+<<SetSpeaker "Sunken Motor Carriage">>
+<<AddParagraph "Seagulls cry overhead. Time moves slowly here. It's a welcome reprive from the hustle and bustle of Jamrock, in small doses at least.">>
+
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\"Well, do you have any more words you would like to say for the funeral detective? Some kind of eulogy perhaps?\"">>
+
+<<display "CarEulogy">>[[|CarEulogy]]
+
+
+:: BelieveKim [nobr] {"position":"1121,3006","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "\"Anytime.\"">>
+
+<<display "Wrapup">>
+
+
+:: JeanRage [nobr] {"position":"1241,3006","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "The lieutenant tilts his head in acknowledgement. \"Officer Vicquemare certainly... expresses himself more strongly than most. But he let you back on the force. Even he'll come around in time.\"">>
+
+<<AddParagraph "\"I know it has been hard, for both of you. But it is getting better I think. I'm pretty sure yelling is how he shows he cares.\" He offers this tentatively, hesitant to insert himself too far into a topic so fraught with history.">>
+
+<<PassiveSkill "esprit de Corps">>
+<<AddParagraph "\"Jean watches you like a hawk for weeks, critical of every slip up, skeptical of any improvement. It hurts in a way you lack the memories to fully understand, and guilt twists whenever you see the deep bags under his eyes, the way he will linger at the many abandoned desks in C-wing.\"">>
+
+<<AddParagraph "It wears you down, and you have your own simmering anger and sense of abandonment to try to contain. You start sniping back, words become more cutting, until it finally comes to the screaming head that's been building for months.">> 
+
+<<AddParagraph "Last week. Kim Kitsuragi stands outside a closed office in Precinct 41, the shouting occupants unaware of his presense. He carefully pulls a single cigarrete out of a pack and lights it, tensing with focus for a moment at the sound of shattering ceramic, but relaxing again when no sounds follow of escalating violence.">>
+
+<<AddParagraph "Eventually, the yelling dies down to only murmers, and perhaps if he strains his hearing enough, words of comfort. Satisfied, he puts his cigarette out on the heel of his shoe, heading home for the night.">>
+
+<<AddOption "\"Maybe...\"" "PostJeanRage">>[[|PostJeanRage]]
+
+
+:: PostJeanRage [nobr] {"position":"1214,3156","size":"100,100"}
+<<SetSpeaker "Kim Kitsuragi">>
+<<AddParagraph "In any case, what's done is done. You've been doing good work, Harry. Take comfort in that.">>
+
+<<display "Wrapup">>
+
+
+:: StoryAuthor {"position":"268,439","size":"100,100"}
+by @ampepers
+
+
+:: StorySubtitle {"position":"392,432","size":"100,100"}
+A Disco Elysium Fanwork
+
+
+:: StoryShare {"position":"526,432","size":"100,100"}
+[["@ampepers on Twitter"|https://twitter.com/ampepers]]
+[["Repo with the source code"|https://github.com/apepers/DiscoElysiumTwineMacros/]]
+
+
