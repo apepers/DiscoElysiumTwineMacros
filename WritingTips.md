@@ -1,6 +1,6 @@
 # Writing Like Disco
 
-(These notes are by Kawa, on things to keep in mind as a writer while using the Disco Elysium macros to write in the style of the game!)
+(These notes are by Kawa, on things to keep in mind as a writer while using the Disco Elysium macros to write in the style of the game! See TwineTips.md for information about things like variables and logic - these are more about tone and writing style.)
 
 Please note that while I have been functionally living in this text for many months now, this is not meant to fully be a canonical style guide - just observations I've made when trying to write in the style of the game. 
 
@@ -74,6 +74,8 @@ The macros consider the options as if they're being done by YOU, which matches t
 A mix of action and dialogue uses parentheses: ```<<AddOption "(Reach over to shake their hand.) \"Pleased to meet you!\"">>```
 
 Even someone interrupting you, done by an option, is done with YOU as the speaker. ```<<AddOption "Kim is about to say something. Let him.">>```
+
+Note that if you want the text of your option to be variable, you must use global variables (that start with `$`). More about global versus local variables in TwineTips.md.
 
 # Voicing and Tone
 
