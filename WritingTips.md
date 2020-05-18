@@ -1,8 +1,8 @@
 # Writing Like Disco
 
-(These notes are by Kawa, on things to keep in mind as a writer while using the Disco Elysium macros to write in the style of the game! See TwineTips.md for information about things like variables and logic - these are more about tone and writing style.)
+(These notes are by Kawa, on things to keep in mind as a writer while using the Disco Elysium macros to write in the style of the game! See TwineTips.md for information about things like variables and logic - these are about tone and writing style.)
 
-Please note that while I have been functionally living in this text for many months now, this is not meant to fully be a canonical style guide - just observations I've made when trying to write in the style of the game. 
+Please note that while I have been functionally living in this text for many months now, this is not meant to be an absolute Word of God canonical style guide - just observations I've made when trying to write in the style of the game. 
 
 # Spelling/Jargon Notes
 
@@ -45,7 +45,7 @@ MOTORICS
 * Perception (Touch)
 * Perception (Hearing)
 
-Note particularly the slash in "Hand/Eye Coordination", the space in "Half Light", the spelling of "Esprit de Corps", and the specific senses for "Perception" in parentheses (as well as a version with no sense specified). Touch technically doesn't show up in the game at all, but it's included in the macros for completeness. 
+Note particularly the slash in "Hand/Eye Coordination", the space in "Half Light", the spelling of "Esprit de Corps", and the specific senses for "Perception" in parentheses (as well as a version with no sense specified). Touch technically doesn't show up in the game at all, but it's included in the macros for completeness. Of course, for custom games using the framework but not the canonical skills, you can edit these to be whatever you like in the `StoryInit` passage. 
 
 While they're not hard-coded in the macros, these are the difficulties used in the game, with the numbers they're assigned to:
 
@@ -133,6 +133,16 @@ A useful trick when writing in the Disco Elysium style is to take advantage of s
 The writer can use YOU for actions, dialogue, and internal monologue, particularly in response to things the skills say. 
 
 Objects can and also should be a "speaker" when the player interacts with them. Particularly with high Inland Empire (or Interfacing for technological objects), the protagonist may be able to sense things about the object beyond its physical attributes, and the writer can include these by using the object as the speaker.
+
+## Tasks and XP
+
+XP can be gained through tasks and secret tasks. Generally 'secret task' XP, that's not telegraphed with an earlier "New Task", is higher than regular task XP. 
+
+Task names are generally short commands - "Ask Kim to tell you about the case" - or objects to investigate "The victim's tattoos". They can also be questions - "Who made the call reporting the crime?"
+
+XP values are always multiples of 5. 
+
+A level up happens in *Disco Elysium* when the player has gained 100 XP. 
 
 # Credits
 
