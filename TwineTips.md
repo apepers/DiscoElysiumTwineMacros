@@ -24,6 +24,8 @@ You could have two or more options that lead to passages that start differently,
 <<SetSpeaker "KIM KITSURAGI">>
 <<AddParagraph "Kim gets up smoothly, holding a hand out to you.">>
 
+<<include LetHim>>[[|LetHim]]
+
 :: UpYourself [nobr] 
 <<SkillFailure>>
 
@@ -32,9 +34,11 @@ You could have two or more options that lead to passages that start differently,
 
 <<SetSpeaker "KIM KITSURAGI">>
 <<AddParagraph "Kim is already upright, holding a hand out to you. ">>
+
+<<include LetHim>>[[|LetHim]]
 ```
 
-I want both of these to continue with a passage (where Kim pulls you up.) Instead of writing the text out twice in each passage, I can add `<<include LetHim>> [[|LetHim]]` at the end of each of these, then create a separate `LetHim` passage:
+I want both of these to continue with a passage (where Kim pulls you up.) The `<<include LetHim>> [[|LetHim]]` piece at the end of each of these looks for a passage called `LetHim` and tacks it on the end:
 
 ```
 :: LetHim [nobr]
@@ -44,9 +48,17 @@ I want both of these to continue with a passage (where Kim pulls you up.) Instea
 
 <<SetSpeaker "KIM KITSURAGI">>
 <<AddParagraph "He wasn't quite expecting the fullness of your weight. Now you're up, but crushed against him, bodies pressing together.">>
+
+<<AddOption "//Oh.//" "AssGrab">>[[|AssGrab]]
 ```
 
-This means you'll get these two paragraphs at the end of both of those options! It's nice because then if you want to edit this text, you only have to edit it once.
+This means you'll get these two paragraphs and option at the end of both of those options! 
+
+![A screenshot of the 'AfterYou' passage rendition, with the 'LetHim' text](AfterYou.png)
+![A screenshot of the 'UpYourself' passage rendition, also having the 'LetHim' text](UpYourself.png)
+![A screenshot of the Twine visual editor - 'ClosingTime' leads to 'AfterYou' and 'UpYourself', and 'AfterYou' and 'UpYourself' both lead to 'LetHim'](VisualInclude.png)
+
+It's nice because then if you want to edit this text, you only have to edit it once, inside `LetHim`, instead of remembering to change it in both `AfterYou` and `UpYourself`.
 
 # Comments
 
