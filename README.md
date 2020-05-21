@@ -5,7 +5,7 @@ A short set of instructions follow on how to use the macros. The game itself can
 
 At its core, this is simply a set of macros that provide a styling that is evocative of Disco Elysium. The macros themselves are agnostic and simply give you easy formatting and colour - you can use this styling to create any kind of Twine game you choose, not just a fangame.
 
-Thank you to ZA/UM for creating Disco Elysium, a game I enjoyed so much, and to the Disco(rd) Elysium community for their support and encouragement!
+Thank you to ZA/UM for creating Disco Elysium, a game I enjoyed so much, and to the Disco(rd) Elysium community for their support and encouragement! Special thanks as well to my dear Kawa who provided invaluable feature requests and is responsible for this repo being as user-friendly as it is.
 
 # Setting up your own Disco Elysium Twine Fangame - two options
 You will need a recent version of Twine (this was created using 2.3.5). Regardless of which of the options you pick below, you'll also need SkillSuccess.png and SkillFailure.png for the overlays, saved wherever your game lives. 
@@ -17,7 +17,7 @@ You can then download BlankProject.html from the 'BlankProject' folder of this r
 
 (Based on the work of Em LazerWalker: https://blog.lazerwalker.com/azure,/game/dev/2020/01/16/a-modern-developers-workflow-for-twine.html)
 
-To take advantage of working in a text editor, easier collaboration, and other more program-focused features, as well as to get Github Pages to host your game, what you'll want is 'BlankProject.twee' in the BlankProject folder, Tweego, and you favourite text editor. I recommend VS Code because it has a Twee syntax highlighter! (See TweegoInstructions.md for more information on using Tweego and Github Pages.)
+To take advantage of working in a text editor, easier collaboration, and other more program-focused features, as well as to get Github Pages to host your game, what you'll want is 'BlankProject.twee' in the BlankProject folder, Tweego, and you favourite text editor. I recommend VS Code because it has a Twee syntax highlighter! (See [this Tweego Instructions Readme for more information on using Tweego and Github Pages.](TweegoInstructions.md))
 
 # Using the macros
 Once your project is set up, most of the functionality around continue buttons, displaying previously chosen options, and formatting passive skill checks is handled for you - as long as you use the provided macros. There is a small set that provides the full functionality of this game.
@@ -134,7 +134,8 @@ Here's an example passage bringing it all together, and note the "nobr" tag at t
 (If you know a better way to handle this, feel free to Tweet at me or submit a pull request, I've only used Twine once before so my solutions work but are I'm sure not ideal!)
 
 ## Tips and Tricks
-Those are all the macros you need in order to write with this tool. As some parting notes:
+This repo includes some more in-depth advice put together by Kawa regarding writing Twine games in the canon Disco Elysium style. You can find [tips on how to write in the Disco Elysium style here](WritingTips.md) and you can find [tips on how to have fun with twine here](TwineTips.md)!
+As some parting notes:
 * This is still running as Sugarcube, and there is nothing stopping you from using variables or any other default Twine features, even though I used them lightly in my own game. This also means that you should use Sugarcube syntax for ```//italics//``` and ```''bold''```. (Though it's worth noting that the game itself pretty much never actually italicizes or bolds within the text, choosing instead to use ALL CAPS and ```*asterisks*```, which helpfully will always render correctly when written as is.) You may get into trouble if you try to output text in a way that doesn't mesh with the current macros, but any kind of conditions or logic do in fact work as normal. Refer to the SugarCube documentation for more information: http://www.motoslave.net/sugarcube/2/docs/ 
 * The page is scrolling to handle mobile support, so nothing is stopping you from adding as many paragraphs to a given passage as you want - however, any time you want a player response, it will have to link to a new passage barring some extra work on your part.
 * In my experience writing this, the most common failure points are un-escaped double-quotes and missed 'nobr' tags. Both will be immediately evident when you view the game, so test often and if you see something funky with your spacing or missing text, check your escaped characters and your whitespace.
